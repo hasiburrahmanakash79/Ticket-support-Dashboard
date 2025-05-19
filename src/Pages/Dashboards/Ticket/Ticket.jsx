@@ -226,7 +226,7 @@ const Ticket = () => {
         {editTicket && (
           <div className="space-y-4 px-4 py-2">
             <h2 className="text-xl font-semibold">Ticket Details</h2>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-4 text-sm">
               <p><strong>Ticket ID:</strong> {editTicket.id}</p>
               <p><strong>Name:</strong> {editTicket.name}</p>
               <p><strong>Email:</strong> {editTicket.email}</p>
@@ -235,7 +235,7 @@ const Ticket = () => {
               <div className="flex gap-3 items-center">
                 <label className="block font-medium mb-1">Status:</label>
                 <select
-                  className=" border border-gray-100 rounded px-3 outline-none"
+                  className=" border border-gray-100 rounded px-3 py-1 outline-none"
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value)}
                 >

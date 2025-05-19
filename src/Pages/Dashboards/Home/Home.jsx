@@ -1,11 +1,10 @@
-import HotDeals from './HotDeals';
-import NewDeals from './NewDeals';
+import DashboardCard from "./DashboardCard";
+
 
 const Home = () => {
     return (
-        <div className='space-y-5'>
-            <HotDeals/>
-            <NewDeals/>
+        <div>
+            <DashboardCard/>
         </div>
     );
 };
