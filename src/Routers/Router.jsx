@@ -10,6 +10,7 @@ import Notifications from "../Pages/Dashboards/Notification/Notification";
 import ProfileInformation from "../Pages/Dashboards/Setting/ProfileInfo";
 import User from "../Pages/Dashboards/User/User";
 import Ticket from "../Pages/Dashboards/Ticket/Ticket";
+import Conversation from "../Pages/Dashboards/Ticket/Conversation";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/ticket",
         element: <Ticket />,
+      },
+      {
+        path: "/conversation/:id",
+        element: <Conversation />,
       },
       {
         path: "/notification",

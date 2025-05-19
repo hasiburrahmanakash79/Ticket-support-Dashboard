@@ -2,6 +2,7 @@ import { useState } from "react";
 import CommonModal from "../../../components/Common/CommonModal";
 import { FaSearch } from "react-icons/fa";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 // Dummy Ticket Data
 const ticketData = [
@@ -171,11 +172,17 @@ const Ticket = () => {
           {filteredTickets.length > 0 ? (
             filteredTickets.map((ticket) => (
               <tr key={ticket.id} className="border-t border-gray-200">
-                <td className="py-3 px-4 text-left">{ticket.id}</td>
+                <td className="py-3 px-4 text-left">
+                  <Link to={`/conversation/${ticket.id}`}>{ticket.id}</Link>
+                </td>
                 <td className="py-3 px-4">{ticket.name}</td>
                 <td className="py-3 px-4">{ticket.email}</td>
                 <td className="py-3 px-4">{ticket.issueType}</td>
-                <td className={`py-3 px-4 font-medium ${getStatusColor(ticket.status)}`}>
+                <td
+                  className={`py-3 px-4 font-medium ${getStatusColor(
+                    ticket.status
+                  )}`}
+                >
                   {ticket.status}
                 </td>
                 <td className="py-3 px-4 flex justify-center gap-10">
@@ -201,9 +208,14 @@ const Ticket = () => {
       </table>
 
       {/* 🗑️ Delete Modal */}
-      <CommonModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+      <CommonModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
         <div className="text-center space-y-4 px-4 py-3">
-          <p className="text-lg font-medium">Are you sure you want to delete this ticket?</p>
+          <p className="text-lg font-medium">
+            Are you sure you want to delete this ticket?
+          </p>
           <div className="flex justify-center gap-4">
             <button
               onClick={() => setIsDeleteModalOpen(false)}
@@ -222,16 +234,29 @@ const Ticket = () => {
       </CommonModal>
 
       {/* Edit Modal */}
-      <CommonModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+      <CommonModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      >
         {editTicket && (
           <div className="space-y-4 px-4 py-2">
             <h2 className="text-xl font-semibold">Ticket Details</h2>
             <div className="space-y-4 text-sm">
-              <p><strong>Ticket ID:</strong> {editTicket.id}</p>
-              <p><strong>Name:</strong> {editTicket.name}</p>
-              <p><strong>Email:</strong> {editTicket.email}</p>
-              <p><strong>Issue Type:</strong> {editTicket.issueType}</p>
-              <p><strong>Issue Date:</strong> {editTicket.issueDate}</p>
+              <p>
+                <strong>Ticket ID:</strong> {editTicket.id}
+              </p>
+              <p>
+                <strong>Name:</strong> {editTicket.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {editTicket.email}
+              </p>
+              <p>
+                <strong>Issue Type:</strong> {editTicket.issueType}
+              </p>
+              <p>
+                <strong>Issue Date:</strong> {editTicket.issueDate}
+              </p>
               <div className="flex gap-3 items-center">
                 <label className="block font-medium mb-1">Status:</label>
                 <select
