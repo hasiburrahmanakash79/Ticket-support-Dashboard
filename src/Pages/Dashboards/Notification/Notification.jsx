@@ -1,14 +1,15 @@
 import { useState } from "react";
+import logo from "../../../assets/logo/logo.png";
 import { FaCheck } from "react-icons/fa";
 import CommonModal from "../../../components/Common/CommonModal";
 
 const initialNotifications = [
   {
     id: 1,
-    title: "LeadPilot AI",
-    message: "Property details for Linda Sanders have been collected and are ready for review.",
+    title: "AI",
+    message: "Linda Sanders have been collected and are ready for review.",
     time: "5h ago",
-    image: "https://images.squarespace-cdn.com/content/v1/6270dcb52a53a65bc96c6dae/ee43aff3-f27d-409f-b5be-a53dd7f494e0/image-asset.jpeg",
+    image: logo,
     read: false,
   },
   {
@@ -16,7 +17,7 @@ const initialNotifications = [
     title: "New Lead Assigned",
     message: "A new lead has been assigned to you: Robert Johnson.",
     time: "2h ago",
-    image: "https://luxoplace.ca/wp-content/uploads/apartment_luxo_2.jpg",
+    image: logo,
     read: false,
   },
   {
@@ -24,7 +25,7 @@ const initialNotifications = [
     title: "Reminder",
     message: "Follow up with Jessica Miller about her recent property inquiry.",
     time: "1d ago",
-    image: "https://pbazaar.com/content/images/thumbs/0182447_1369-sft-ongoing-apartment-for-sale-mirpur.jpeg",
+    image: logo,
     read: false,
   },
   {
@@ -32,15 +33,16 @@ const initialNotifications = [
     title: "Meeting Scheduled",
     message: "Your meeting with Sarah Brown is confirmed for tomorrow at 3PM.",
     time: "3h ago",
-    image: "https://www.bdhousing.com/api/list/listings/100X100/237260/166e7339df90349227fc4730c2327362.jpg",
+    image: logo,
     read: false,
   },
   {
     id: 5,
     title: "New Message",
-    message: "Client Alex Turner has sent a message regarding the 2BHK listing.",
+    message:
+      "Client Alex Turner has sent a message regarding the 2BHK listing.",
     time: "10m ago",
-    image: "https://images.squarespace-cdn.com/content/v1/6270dcb52a53a65bc96c6dae/ee43aff3-f27d-409f-b5be-a53dd7f494e0/image-asset.jpeg",
+    image: logo,
     read: false,
   },
   {
@@ -48,7 +50,7 @@ const initialNotifications = [
     title: "Price Update",
     message: "The price of property ID #45213 has been updated.",
     time: "4h ago",
-    image: "https://luxoplace.ca/wp-content/uploads/apartment_luxo_2.jpg",
+    image: logo,
     read: false,
   },
   {
@@ -56,7 +58,7 @@ const initialNotifications = [
     title: "Client Feedback",
     message: "You received new feedback from Emily Watson.",
     time: "30m ago",
-    image: "https://pbazaar.com/content/images/thumbs/0182447_1369-sft-ongoing-apartment-for-sale-mirpur.jpeg",
+    image: logo,
     read: false,
   },
   {
@@ -64,7 +66,7 @@ const initialNotifications = [
     title: "Call Scheduled",
     message: "Your call with Jason Lee is scheduled for 5 PM today.",
     time: "15m ago",
-    image: "https://www.bdhousing.com/api/list/listings/100X100/237260/166e7339df90349227fc4730c2327362.jpg",
+    image: logo,
     read: false,
   },
   {
@@ -72,7 +74,7 @@ const initialNotifications = [
     title: "Offer Received",
     message: "An offer has been received for property ID #67890.",
     time: "45m ago",
-    image: "https://images.squarespace-cdn.com/content/v1/6270dcb52a53a65bc96c6dae/ee43aff3-f27d-409f-b5be-a53dd7f494e0/image-asset.jpeg",
+    image: logo,
     read: false,
   },
   {
@@ -80,11 +82,10 @@ const initialNotifications = [
     title: "Site Visit Confirmed",
     message: "The site visit for Mia Rodriguez is confirmed for Friday.",
     time: "6h ago",
-    image: "https://luxoplace.ca/wp-content/uploads/apartment_luxo_2.jpg",
+    image: logo,
     read: false,
   },
 ];
-
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState(initialNotifications);
@@ -123,20 +124,16 @@ const Notifications = () => {
         </button>
       </div>
 
-      <div className="">
+      <div className="space-y-3">
         {notifications.map((item) => (
           <div
             key={item.id}
-            className={`flex gap-4 py-4 cursor-pointer hover:bg-blue-100 transform duration-200 border-b border-gray-100 px-5 ${
+            className={`flex gap-4 py-4 cursor-pointer hover:bg-blue-50 transform duration-200 border border-gray-200 px-5 rounded-lg ${
               item.read ? "text-gray-500" : "font-semibold"
             }`}
             onClick={() => handleClickNotification(item)}
           >
-            <img
-              src={item.image}
-              alt="AI"
-              className="w-10 h-10 rounded-full"
-            />
+            <img src={item.image} alt="logo" className="w-20" />
             <div className="flex-1">
               <button
                 onClick={() => handleView(item)}

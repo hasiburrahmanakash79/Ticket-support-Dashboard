@@ -9,9 +9,9 @@ import Home from "../Pages/Dashboards/Home/Home";
 import PropertyDetails from "../Pages/Dashboards/Home/PropertyDetails";
 import PropertyKeyFindings from "../Pages/Dashboards/Home/PropertyKeyFindings";
 import PropertyOffer from "../Pages/Dashboards/Home/PropertyOffer";
-import Leads from "../Pages/Dashboards/Leads/Leads";
 import Notifications from "../Pages/Dashboards/Notification/Notification";
 import ProfileInformation from "../Pages/Dashboards/Setting/ProfileInfo";
+import User from "../Pages/Dashboards/User/User";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/user",
-        element: <Leads />,
+        element: <User />,
       },
       {
         path: "/notification",
