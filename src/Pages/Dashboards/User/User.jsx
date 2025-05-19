@@ -71,7 +71,7 @@ const User = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("view"); // "view" or "delete"
+  const [modalType, setModalType] = useState("view");
 
   const handleViewOwner = (owner) => {
     setSelectedOwner(owner);

@@ -12,6 +12,7 @@ import PropertyOffer from "../Pages/Dashboards/Home/PropertyOffer";
 import Notifications from "../Pages/Dashboards/Notification/Notification";
 import ProfileInformation from "../Pages/Dashboards/Setting/ProfileInfo";
 import User from "../Pages/Dashboards/User/User";
+import Ticket from "../Pages/Dashboards/Ticket/Ticket";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <User />,
+      },
+      {
+        path: "/ticket",
+        element: <Ticket />,
       },
       {
         path: "/notification",
