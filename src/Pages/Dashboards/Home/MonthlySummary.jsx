@@ -1,87 +1,59 @@
-
-
-
 import { useState } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Cell,
-} from "recharts";
-
-const weeklyData = [
-  { month: "W1", value: 1 },
-  { month: "W2", value: 2 },
-  { month: "W3", value: 1 },
-  { month: "W4", value: 3 },
-];
-
-const monthlyData = [
-  { month: "Feb", value: 1 },
-  { month: "Mar", value: 2 },
-  { month: "Apr", value: 1 },
-  { month: "May", value: 3 },
-  { month: "Jun", value: 2 },
-];
-
-const yearlyData = [
-  { month: "Jan", value: 1 },
-  { month: "Feb", value: 2 },
-  { month: "Mar", value: 2 },
-  { month: "Apr", value: 1 },
-  { month: "May", value: 3 },
-  { month: "Jun", value: 2 },
-  { month: "Jul", value: 1 },
-  { month: "Aug", value: 3 },
-  { month: "Sep", value: 2 },
-  { month: "Oct", value: 2 },
-  { month: "Nov", value: 3 },
-  { month: "Dec", value: 1 },
-];
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2 text-sm text-gray-900">
-        <p className="font-semibold">{label}</p>
-        <p className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-          Level: {payload[0].value}
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
+import { LineChart } from "@mui/x-charts/LineChart";
 
 const MonthlySummary = () => {
   const [selectedRange, setSelectedRange] = useState("Monthly");
 
-  const getChartData = () => {
-    switch (selectedRange) {
-      case "Weekly":
-        return weeklyData;
-      case "Monthly":
-        return monthlyData;
-      case "Yearly":
-        return yearlyData;
-      default:
-        return monthlyData;
-    }
+  // Sample Data Sets
+  const weeklyData = [
+    { date: "Apr 01", score: 3 },
+    { date: "Apr 08", score: 6 },
+    { date: "Apr 15", score: 4 },
+    { date: "Apr 22", score: 7 },
+    { date: "Apr 29", score: 5 },
+  ];
+
+  const monthlyData = [
+    { date: "Jan", score: 20 },
+    { date: "Feb", score: 35 },
+    { date: "Mar", score: 28 },
+    { date: "Apr", score: 40 },
+    { date: "May", score: 32 },
+    { date: "Jun", score: 42 },
+    { date: "Jul", score: 52 },
+    { date: "Aug", score: 32 },
+    { date: "Sep", score: 52 },
+    { date: "Oct", score: 22 },
+    { date: "Nov", score: 32 },
+    { date: "Dec", score: 12 },
+  ];
+
+  const yearlyData = [
+    { date: "2020", score: 180 },
+    { date: "2021", score: 220 },
+    { date: "2022", score: 210 },
+    { date: "2023", score: 240 },
+    { date: "2024", score: 250 },
+  ];
+
+  // Filter data based on selection
+  const getFilteredData = () => {
+    if (selectedRange === "Weekly") return weeklyData;
+    if (selectedRange === "Monthly") return monthlyData;
+    if (selectedRange === "Yearly") return yearlyData;
+    return [];
   };
 
-  const data = getChartData();
+  const filteredData = getFilteredData();
+  const xLabels = filteredData.map((item) => item.date);
+  const scores = filteredData.map((item) => item.score);
 
   return (
-    <div className="">
-      <div className="pb-3 text-gray-500 flex items-center justify-between">
-        <h4 className="text-gray-500 font-medium">Growth Trend </h4>
+    <div className="border-2 border-gray-100 p-5 rounded-xl">
+      <div className="pb-3 flex items-center justify-between">
+        <h4 className="font-semibold text-lg">Monthly Ticket Summary</h4>
         <select
-          className="text-text-sm px-2 py-1 rounded-md outline-none text-gray-700"
+          className="text-sm px-2 py-1 rounded-md outline-none text-gray-700"
           value={selectedRange}
           onChange={(e) => setSelectedRange(e.target.value)}
         >
@@ -91,38 +63,46 @@ const MonthlySummary = () => {
         </select>
       </div>
 
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={data} barCategoryGap={25}>
-          <XAxis
-            dataKey="month"
-            tick={{ fontSize: 12, fill: "#9CA3AF" }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            domain={[0, 3]}
-            ticks={[0, 1, 2, 3]}
-            tickFormatter={(value) => `LV ${value}`}
-            tick={{ fontSize: 12, fill: "#9CA3AF" }}
-            axisLine={false}
-            tickLine={false}
-            width={40}
-          />
-          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#F3F4F6" />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
-          <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-            {data.map((_, index) => (
-              <Cell key={index} fill="url(#blueGradient)" />
-            ))}
-          </Bar>
-          <defs>
-            <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7cb9ff" />
-              <stop offset="100%" stopColor="#3286ff" />
-            </linearGradient>
-          </defs>
-        </BarChart>
-      </ResponsiveContainer>
+      <LineChart
+        height={300}
+        xAxis={[
+          {
+            scaleType: "point",
+            data: xLabels,
+            tickLabelStyle: {
+              fontSize: 12,
+              fill: "#999",
+            },
+          },
+        ]}
+        yAxis={[
+          {
+            tickMinStep: 1,
+            tickLabelStyle: {
+              fontSize: 12,
+              fill: "#999",
+            },
+          },
+        ]}
+        grid={{ horizontal: true, vertical: false }}
+        series={[
+          {
+            data: scores,
+            label: "Score",
+            color: "#3B82F6",
+            curve: "monotone",
+          },
+        ]}
+        margin={{ top: 10, right: 20, bottom: 30, left: 40 }}
+        sx={{
+          ".MuiLineElement-root": {
+            strokeWidth: 2,
+          },
+          ".MuiMarkElement-root": {
+            display: "none",
+          },
+        }}
+      />
     </div>
   );
 };

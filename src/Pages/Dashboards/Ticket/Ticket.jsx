@@ -170,7 +170,7 @@ const Ticket = () => {
         <tbody className="text-sm text-center">
           {filteredTickets.length > 0 ? (
             filteredTickets.map((ticket) => (
-              <tr key={ticket.id} className="border-b border-gray-200">
+              <tr key={ticket.id} className="border-t border-gray-200">
                 <td className="py-3 px-4 text-left">{ticket.id}</td>
                 <td className="py-3 px-4">{ticket.name}</td>
                 <td className="py-3 px-4">{ticket.email}</td>
@@ -221,7 +221,7 @@ const Ticket = () => {
         </div>
       </CommonModal>
 
-      {/* ✏️ Edit Modal */}
+      {/* Edit Modal */}
       <CommonModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         {editTicket && (
           <div className="space-y-4 px-4 py-2">

@@ -66,7 +66,7 @@ const initialUsers = [
   },
 ];
 
-const User = () => {
+const RecentUser = () => {
   const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOwner, setSelectedOwner] = useState(null);
@@ -205,4 +205,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default RecentUser;
