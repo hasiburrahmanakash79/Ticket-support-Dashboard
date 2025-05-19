@@ -1,6 +1,7 @@
 import DashboardCard from "./DashboardCard";
 import MonthlySummary from "./MonthlySummary";
 import RecentTicket from "./RecentTicket";
+import RecentUser from "./RecentUser";
 
 
 const Home = () => {
@@ -11,6 +12,7 @@ const Home = () => {
                 <MonthlySummary/>
                 <RecentTicket/>
             </div>
+            <RecentUser/>
         </div>
     );
 };
