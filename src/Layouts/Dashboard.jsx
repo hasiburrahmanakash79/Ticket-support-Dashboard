@@ -115,9 +115,9 @@ const Dashboard = () => {
         <div className="mt-28 bottom-10 absolute w-full">
           <button
             onClick={handleLogout}
-            className={`flex cursor-pointer text-sm items-center justify-center  p-2 w-4/5 ms-2.5 rounded bg-red-500 text-white`}
+            className={`flex cursor-pointer text-sm items-center  p-2 w-4/5 ms-3 rounded text-red-400`}
           >
-            <li className="flex items-center justify-center gap-x-4 w-full">
+            <li className="flex items-center gap-x-4 w-full">
               <FaRightFromBracket />
               <span className={`origin-left duration-200`}>Logout</span>
             </li>

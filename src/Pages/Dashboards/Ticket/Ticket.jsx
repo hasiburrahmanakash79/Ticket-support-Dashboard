@@ -219,7 +219,7 @@ const Ticket = () => {
           <div className="flex justify-center gap-4">
             <button
               onClick={() => setIsDeleteModalOpen(false)}
-              className="border border-blue-500 text-blue-500 px-6 py-2 rounded hover:bg-blue-50"
+              className="px-5 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
             >
               Cancel
             </button>
@@ -270,16 +270,16 @@ const Ticket = () => {
                 </select>
               </div>
             </div>
-            <div className="flex justify-end gap-4 pt-4">
+            <div className="flex justify-center gap-4 pt-4 w-full">
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="border border-blue-500 text-blue-500 px-6 py-2 rounded hover:bg-blue-50"
+                className="border border-blue-500 text-blue-500 px-6 py-2 rounded hover:bg-blue-50 w-full"
               >
                 Cancel
               </button>
               <button
                 onClick={saveEdit}
-                className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+                className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 w-full"
               >
                 Save
               </button>
