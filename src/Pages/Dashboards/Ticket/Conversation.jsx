@@ -1,6 +1,8 @@
 // import React from 'react';
 import { useState } from "react";
 import { FiSend } from "react-icons/fi";
+import { RiArrowLeftLine } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 const initialMessages = [
   {
@@ -41,28 +43,43 @@ const Conversation = () => {
     setNewMessage("");
   };
 
+  const navigate = useNavigate();
+
   return (
     <div>
-      <h1 className="text-2xl font-semibold ">Ticket Details </h1>
-      <div className="space-y-4 text-sm my-10">
-        <p>
-          <strong>Ticket ID:</strong> TCKT007
-        </p>
-        <p>
-          <strong>Name:</strong> Grace Lee
-        </p>
-        <p>
-          <strong>Email:</strong> grace@example.com
-        </p>
-        <p>
-          <strong>Issue Type:</strong> Sync Issue
-        </p>
-        <p>
-          <strong>Issue Date:</strong> 2025-05-07
-        </p>
-        <p>
-          <strong>Status:</strong> In Progress
-        </p>
+      <div className="flex items-center gap-3">
+        <button className="text-2xl" onClick={() => navigate(-1)}>
+          <RiArrowLeftLine/>
+        </button>
+        <h1 className="text-2xl font-semibold ">Ticket Details </h1>
+      </div>
+      <div className="grid grid-cols-3 gap-10 my-10 ">
+        <div className="space-y-4 text-sm col-span-1">
+          <p>
+            <strong>Ticket ID:</strong> TCKT007
+          </p>
+          <p>
+            <strong>Name:</strong> Grace Lee
+          </p>
+          <p>
+            <strong>Email:</strong> grace@example.com
+          </p>
+          <p>
+            <strong>Model Name:</strong> Dji M4ST0
+          </p>
+          <p>
+            <strong>Issue Type:</strong> Sync Issue
+          </p>
+          <p>
+            <strong>Issue Date:</strong> 2025-05-07
+          </p>
+          <p>
+            <strong>Status:</strong> In Progress
+          </p>
+        </div>
+        <div className="col-span-2">
+          images
+        </div>
       </div>
       <h2 className="text-xl font-semibold mb-3">Recent Conversation</h2>
       <div className="p-4 bg-white rounded-xl border border-gray-200">

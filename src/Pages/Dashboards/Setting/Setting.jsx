@@ -1,8 +1,9 @@
-import { IoArrowBackOutline, IoChevronForwardSharp } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { IoChevronForwardSharp } from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import CommonModal from "../../../components/Common/CommonModal";
 import { useForm } from "react-hook-form";
+import { RiArrowLeftLine } from "react-icons/ri";
 
 const Setting = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -16,7 +17,12 @@ const Setting = () => {
     confirmPassword: "",
   });
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   useEffect(() => {
     let interval;
@@ -64,13 +70,15 @@ const Setting = () => {
     reset();
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="p-4">
       {/* Header */}
       <div className="flex items-center mb-6">
-        <Link to="/" className="mr-4">
-          <IoArrowBackOutline className="text-2xl" />
-        </Link>
+        <button className="text-2xl" onClick={() => navigate(-1)}>
+          <RiArrowLeftLine />
+        </button>
         <h1 className="text-2xl font-semibold">Setting</h1>
       </div>
 

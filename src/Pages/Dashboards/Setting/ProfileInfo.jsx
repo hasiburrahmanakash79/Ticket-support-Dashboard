@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { FaCamera } from "react-icons/fa";
+import { RiArrowLeftLine } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 const ProfileInformation = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -39,10 +41,18 @@ const ProfileInformation = () => {
     console.log(formData); // Save API call here
   };
 
+  const navigate = useNavigate();
+
+
   return (
-    <form onSubmit={handleSubmit} className="p-5">
-      <div className="flex justify-between items-center mb-5 pb-4">
-        <h2 className="font-semibold text-lg">Personal Information</h2>
+    <form onSubmit={handleSubmit} className="p-4">
+      <div className="flex justify-between items-center mb-6 pb-4">
+        <div className="flex items-center gap-3">
+          <button className="text-2xl" onClick={() => navigate(-1)}>
+          <RiArrowLeftLine />
+        </button>
+        <h2 className="font-semibold text-2xl">Personal Information</h2>
+        </div>
         {!isEditing && (
           <button
             type="button"
