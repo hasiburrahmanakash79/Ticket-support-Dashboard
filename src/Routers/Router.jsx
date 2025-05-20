@@ -29,7 +29,7 @@ const router = createBrowserRouter([
         element: <Ticket />,
       },
       {
-        path: "/conversation/:id",
+        path: "/ticket_details/:id",
         element: <Conversation />,
       },
       {
