@@ -21,6 +21,49 @@ const initialMessages = [
   },
 ];
 
+const droneImages = [
+  {
+    id: 1,
+    url: "https://img.freepik.com/free-photo/quadcopter-flying-nature_231208-10459.jpg?semt=ais_hybrid&w=740",
+  },
+  {
+    id: 2,
+    url: "https://navbharattimes.indiatimes.com/thumb/111484706/best-drone-camera-on-amazon-sale-2024-111484706.jpg?imgsize=55136&width=1600&height=900&resizemode=75",
+  },
+  {
+    id: 3,
+    url: "https://images.pexels.com/photos/10084393/pexels-photo-10084393.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 4,
+    url: "https://st.depositphotos.com/37542498/56288/i/450/depositphotos_562880176-stock-photo-nurtingen-germany-june-2021-modern.jpg",
+  },
+  {
+    id: 5,
+    url: "https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/blogs/2147486350/images/LYkihHYRQ66whjpvNzbO_Flying_drone_14.jpg",
+  },
+  {
+    id: 6,
+    url: "https://www.dronegenuity.com/wp-content/uploads/2017/07/header-image-1.jpg",
+  },
+  {
+    id: 7,
+    url: "https://www.shutterstock.com/shutterstock/videos/1108091485/thumb/1.jpg?ip=x480",
+  },
+  {
+    id: 8,
+    url: "https://www.shutterstock.com/shutterstock/videos/9109109/thumb/1.jpg?ip=x480",
+  },
+  {
+    id: 9,
+    url: "https://www.shutterstock.com/shutterstock/videos/1100930983/thumb/8.jpg?ip=x480",
+  },
+  {
+    id: 10,
+    url: "https://images.pexels.com/videos/3173391/free-video-3173391.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+  },
+];
+
 const Conversation = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
@@ -49,7 +92,7 @@ const Conversation = () => {
     <div>
       <div className="flex items-center gap-3">
         <button className="text-2xl" onClick={() => navigate(-1)}>
-          <RiArrowLeftLine/>
+          <RiArrowLeftLine />
         </button>
         <h1 className="text-2xl font-semibold ">Ticket Details </h1>
       </div>
@@ -78,7 +121,17 @@ const Conversation = () => {
           </p>
         </div>
         <div className="col-span-2">
-          images
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {droneImages.map((img) => (
+              <div key={img.id} className="rounded overflow-hidden shadow-md">
+                <img
+                  src={img.url}
+                  alt={`Drone ${img.id}`}
+                  className="w-full h-32 object-cover"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <h2 className="text-xl font-semibold mb-3">Recent Conversation</h2>
