@@ -172,7 +172,7 @@ const Ticket = () => {
           {filteredTickets.length > 0 ? (
             filteredTickets.map((ticket) => (
               <tr key={ticket.id} className="border-t border-gray-200">
-                <td className="py-3 px-4 text-left">
+                <td className="py-3 px-4 text-left hover:text-blue-500 hover:underline">
                   <Link to={`/conversation/${ticket.id}`}>{ticket.id}</Link>
                 </td>
                 <td className="py-3 px-4">{ticket.name}</td>

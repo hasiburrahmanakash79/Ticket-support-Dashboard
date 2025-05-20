@@ -75,7 +75,7 @@ const Setting = () => {
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="flex items-center mb-6">
+      <div className="flex items-center gap-3 mb-6">
         <button className="text-2xl" onClick={() => navigate(-1)}>
           <RiArrowLeftLine />
         </button>
