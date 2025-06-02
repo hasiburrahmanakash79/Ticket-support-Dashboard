@@ -11,10 +11,15 @@ import ProfileInformation from "../Pages/Dashboards/Setting/ProfileInfo";
 import User from "../Pages/Dashboards/User/User";
 import Ticket from "../Pages/Dashboards/Ticket/Ticket";
 import Conversation from "../Pages/Dashboards/Ticket/Conversation";
+import ProtectedRoute from "./ProtectedRoute";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Dashboard />,
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",

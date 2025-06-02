@@ -1,5 +1,5 @@
 import logo from "../assets/logo/logo.png";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BiHomeAlt2 } from "react-icons/bi";
 import { RiSettings4Line } from "react-icons/ri";
 import { CiMedicalClipboard } from "react-icons/ci";
@@ -8,24 +8,33 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { IconContext } from "react-icons";
 import Swal from "sweetalert2";
+import useAdmin from "../components/hook/useAdmin";
+import { removeAuthTokens } from "../lib/cookie-utils";
 
 const Dashboard = () => {
   const location = useLocation();
 
-  const handleLogout = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You want to logout!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Logout!",
-      cancelButtonText: "No, Cancel!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("User logged out");
-      }
-    });
-  };
+  const { admin, loading } = useAdmin();
+
+  console.log(admin, loading);
+
+  const navigate = useNavigate(); // Add this at the top inside Dashboard component
+
+const handleLogout = () => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You want to logout!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Logout!",
+    cancelButtonText: "No, Cancel!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      removeAuthTokens(); // Clears cookies
+      navigate("/signin"); // Redirect to Sign In page
+    }
+  });
+};
 
   const iconMappings = {
     Home: BiHomeAlt2,
@@ -133,7 +142,7 @@ const Dashboard = () => {
           {/* Left Section */}
           <div>
             <h1 className="text-2xl font-semibold text-gray-800">
-              Welcome, John 👋
+              Welcome, {admin?.userProfile?.fullName} 👋
             </h1>
             <p className="text-sm text-gray-500">Have a wonderful day!</p>
           </div>
@@ -148,8 +157,8 @@ const Dashboard = () => {
               />
             </div>
             <div>
-              <span className="font-medium text-gray-800">John Max</span>
-              <p className="text-gray-500 text-sm">Admin</p>
+              <span className="font-medium text-gray-800">{admin?.userProfile?.fullName}</span>
+              <p className="text-gray-500 text-sm">{admin?.role}</p>
             </div>
           </div>
         </div>

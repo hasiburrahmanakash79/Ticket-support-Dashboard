@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import apiClient from "../../lib/api-client";
+import { setCookie } from "../../lib/cookie-utils";
 
 const SignIn = () => {
   const {
@@ -9,15 +11,45 @@ const SignIn = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const onSubmit = (data) => {
-    console.log("SignIn Data:", data);
-    // Sign-in logic here
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      const res = await apiClient.post("/auth/login", data);
+      console.log(res);
+      console.log("SignIn Data:", data);
+
+      if (res?.data?.data?.accessToken) {
+        const accessToken = res.data.data.accessToken;
+        const refreshToken = res.data.data.refreshToken;
+
+        // ✅ Save in cookie (not just localStorage)
+        setCookie("accessToken", accessToken, { maxAge: 30 * 60 }); // 30 mins
+        setCookie("refreshToken", refreshToken, { maxAge: 7 * 24 * 60 * 60 }); // 7 days
+
+        navigate("/");
+      } else {
+        setErrorMsg("Invalid response from server.");
+      }
+    } catch (err) {
+      console.log(err);
+      if (err.response?.data?.message) {
+        setErrorMsg(err.response.data.message);
+      } else {
+        setErrorMsg("Login failed. Please try again.");
+      }
+    }
   };
 
   return (
@@ -37,6 +69,10 @@ const SignIn = () => {
             Sign in Your Account
           </h2>
 
+          {errorMsg && (
+            <p className="text-red-600 text-center text-sm mb-4">{errorMsg}</p>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Email */}
             <input
@@ -55,6 +91,7 @@ const SignIn = () => {
               <p className="text-red-600 text-sm">{errors.email.message}</p>
             )}
 
+            {/* Password */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -100,29 +137,11 @@ const SignIn = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 hover:shadow-xl duration-500 text-white font-semibold py-2 rounded-md"
+              disabled={loading}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
-          {/* Divider */}
-          <div className="my-5 text-center text-gray-500">Or Login with</div>
-          {/* Social Login */}
-          <button className="flex items-center justify-center w-full px-4 py-2 rounded-md border border-blue-200 outline-none ">
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5 mr-2"
-            />
-            Google
-          </button>
-
-          {/* Bottom Signup */}
-          <p className="text-center text-sm mt-6">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-blue-500 hover:underline">
-              Sign Up Free
-            </Link>
-          </p>
         </div>
       </div>
     </div>
