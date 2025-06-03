@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { RiArrowLeftLine } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import useTicket from "../../../components/hook/useTicket";
 
 const initialMessages = [
   {
@@ -21,52 +22,16 @@ const initialMessages = [
   },
 ];
 
-const droneImages = [
-  {
-    id: 1,
-    url: "https://img.freepik.com/free-photo/quadcopter-flying-nature_231208-10459.jpg?semt=ais_hybrid&w=740",
-  },
-  {
-    id: 2,
-    url: "https://navbharattimes.indiatimes.com/thumb/111484706/best-drone-camera-on-amazon-sale-2024-111484706.jpg?imgsize=55136&width=1600&height=900&resizemode=75",
-  },
-  {
-    id: 3,
-    url: "https://images.pexels.com/photos/10084393/pexels-photo-10084393.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  },
-  {
-    id: 4,
-    url: "https://st.depositphotos.com/37542498/56288/i/450/depositphotos_562880176-stock-photo-nurtingen-germany-june-2021-modern.jpg",
-  },
-  {
-    id: 5,
-    url: "https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/blogs/2147486350/images/LYkihHYRQ66whjpvNzbO_Flying_drone_14.jpg",
-  },
-  {
-    id: 6,
-    url: "https://www.dronegenuity.com/wp-content/uploads/2017/07/header-image-1.jpg",
-  },
-  {
-    id: 7,
-    url: "https://www.shutterstock.com/shutterstock/videos/1108091485/thumb/1.jpg?ip=x480",
-  },
-  {
-    id: 8,
-    url: "https://www.shutterstock.com/shutterstock/videos/9109109/thumb/1.jpg?ip=x480",
-  },
-  {
-    id: 9,
-    url: "https://www.shutterstock.com/shutterstock/videos/1100930983/thumb/8.jpg?ip=x480",
-  },
-  {
-    id: 10,
-    url: "https://images.pexels.com/videos/3173391/free-video-3173391.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-  },
-];
-
 const Conversation = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
+
+  const { tickets, loading } = useTicket([]);
+
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const ticket = tickets.find((ticket) => ticket._id === id);
 
   const handleSend = () => {
     if (newMessage.trim() === "") return;
@@ -86,7 +51,8 @@ const Conversation = () => {
     setNewMessage("");
   };
 
-  const navigate = useNavigate();
+  if (loading) return <div>Loading...</div>;
+  console.log(ticket, "Ticket Details");
 
   return (
     <div>
@@ -99,34 +65,43 @@ const Conversation = () => {
       <div className="grid grid-cols-3 gap-10 my-10 ">
         <div className="space-y-4 text-sm col-span-1">
           <p>
-            <strong>Ticket ID:</strong> TCKT007
+            <strong>Ticket ID:</strong> {ticket?._id}
           </p>
           <p>
-            <strong>Name:</strong> Grace Lee
+            <strong>Name:</strong> {ticket?.userProfile?.fullName || "N/A"}
           </p>
           <p>
-            <strong>Email:</strong> grace@example.com
+            <strong>Email:</strong> {ticket?.userProfile?.user?.email || "N/A"}
           </p>
           <p>
-            <strong>Model Name:</strong> Dji M4ST0
+            <strong>Phone:</strong> {ticket?.userProfile?.phone || "N/A"}
           </p>
           <p>
-            <strong>Issue Type:</strong> Sync Issue
+            <strong>User Type:</strong> {ticket?.userType || "N/A"}
           </p>
           <p>
-            <strong>Issue Date:</strong> 2025-05-07
+            <strong>Issue Type:</strong>{" "}
+            {Array.isArray(ticket.issue)
+              ? ticket.issue
+                  .map((issue, index) => `${index + 1}. ${issue}`)
+                  .join(", ")
+              : ticket.issue}
           </p>
           <p>
-            <strong>Status:</strong> In Progress
+            <strong>Issue Date:</strong>{" "}
+            {new Date(ticket?.createdAt).toLocaleDateString() || "N/A"}
+          </p>
+          <p>
+            <strong>Status:</strong> {ticket?.status || "N/A"}
           </p>
         </div>
         <div className="col-span-2">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {droneImages.map((img) => (
+            {ticket?.images.map((img, index) => (
               <div key={img.id} className="rounded overflow-hidden shadow-md">
                 <img
-                  src={img.url}
-                  alt={`Drone ${img.id}`}
+                  src={`http://192.168.10.18:5001${img}`}
+                  alt={`Ticket image ${index + 1}`}
                   className="w-full h-32 object-cover"
                 />
               </div>

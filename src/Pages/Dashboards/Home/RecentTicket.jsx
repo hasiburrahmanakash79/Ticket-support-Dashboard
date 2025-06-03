@@ -1,102 +1,26 @@
-const ticketData = [
-  {
-    id: "TCKT001",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    issueType: "Login Issue",
-    issueDate: "2025-05-01",
-    status: "Open",
-  },
-  {
-    id: "TCKT002",
-    name: "Bob Smith",
-    email: "bob@example.com",
-    issueType: "Payment Failed",
-    issueDate: "2025-05-02",
-    status: "In Progress",
-  },
-  {
-    id: "TCKT003",
-    name: "Carol Davis",
-    email: "carol@example.com",
-    issueType: "App Crash",
-    issueDate: "2025-05-03",
-    status: "Resolved",
-  },
-  {
-    id: "TCKT004",
-    name: "David Wilson",
-    email: "david@example.com",
-    issueType: "Slow Performance",
-    issueDate: "2025-05-04",
-    status: "Open",
-  },
-  {
-    id: "TCKT005",
-    name: "Eva Brown",
-    email: "eva@example.com",
-    issueType: "Missing Features",
-    issueDate: "2025-05-05",
-    status: "Open",
-  },
-  {
-    id: "TCKT006",
-    name: "Frank Miller",
-    email: "frank@example.com",
-    issueType: "Installation Problem",
-    issueDate: "2025-05-06",
-    status: "Resolved",
-  },
-  {
-    id: "TCKT007",
-    name: "Grace Lee",
-    email: "grace@example.com",
-    issueType: "Sync Issue",
-    issueDate: "2025-05-07",
-    status: "In Progress",
-  },
-  {
-    id: "TCKT008",
-    name: "Henry Clark",
-    email: "henry@example.com",
-    issueType: "Login Issue",
-    issueDate: "2025-05-08",
-    status: "Open",
-  },
-  {
-    id: "TCKT009",
-    name: "Ivy Hall",
-    email: "ivy@example.com",
-    issueType: "Password Reset",
-    issueDate: "2025-05-09",
-    status: "Resolved",
-  },
-  {
-    id: "TCKT010",
-    name: "Jack Turner",
-    email: "jack@example.com",
-    issueType: "Bug Report",
-    issueDate: "2025-05-10",
-    status: "In Progress",
-  },
-];
+import { Link } from "react-router-dom";
+import useTicket from "../../../components/hook/useTicket";
 
 const RecentTicket = () => {
 
-    const sliceTicket = ticketData.slice(0, 6);
+  const { tickets, loading } = useTicket([]);
+
+    const sliceTicket = tickets.slice(0, 6);
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Open":
-        return "text-red-500";
-      case "In Progress":
+      case "Pending":
+        return "text-gray-500";
+      case "InProgress":
         return "text-yellow-500";
-      case "Resolved":
+      case "Solved":
         return "text-green-600";
       default:
-        return "text-gray-500";
+        return "text-red-500";
     }
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl p-5">
@@ -114,16 +38,37 @@ const RecentTicket = () => {
         <tbody className="text-sm text-center">
           {sliceTicket.map((ticket) => (
             <tr key={ticket.id} className="border-t border-gray-200">
-              <td className="py-3 px-4 text-left">{ticket.id}</td>
-              <td className="py-3 px-4">{ticket.name}</td>
-              <td className="py-3 px-4">{ticket.issueType}</td>
-              <td
-                className={`py-3 px-4 font-medium ${getStatusColor(
-                  ticket.status
-                )}`}
-              >
-                {ticket.status}
-              </td>
+              <td className="py-3 px-4 text-left hover:text-blue-500 hover:underline">
+                  <Link to={`/ticket_details/${ticket._id}`}>{ticket._id}</Link>
+                </td>
+                <td className="py-3 px-4">{ticket.userProfile?.fullName}</td>
+                <td className="py-3 px-4">
+                  {Array.isArray(ticket.issue) ? (
+                    ticket.issue.length <= 1 ? (
+                      ticket.issue
+                        .map((issue, index) => `${index + 1}. ${issue}`)
+                        .join(", ")
+                    ) : (
+                      <>
+                        {ticket.issue
+                          .slice(0, 1)
+                          .map((issue, index) => `${index + 1}. ${issue}`)
+                          .join(", ")}
+                        {` +${ticket.issue.length - 1} more`}
+                      </>
+                    )
+                  ) : (
+                    ticket.issue
+                  )}
+                </td>
+
+                <td
+                  className={`py-3 px-4 font-medium ${getStatusColor(
+                    ticket.status
+                  )}`}
+                >
+                  {ticket.status}
+                </td>
             </tr>
           ))}
         </tbody>

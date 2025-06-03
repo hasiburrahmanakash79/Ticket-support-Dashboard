@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import apiClient from '../../lib/api-client';
 
 const useTicket = ({ page = 1, status = '', searchTerm = '' }) => {
@@ -24,7 +23,6 @@ const useTicket = ({ page = 1, status = '', searchTerm = '' }) => {
       setTotalPages(res.data?.totalPages || 1); // Optional
       setError(null);
 
-      console.log(res?.data?.data, "Tickets fetched successfully");
     } catch (err) {
       console.error("Error fetching tickets:", err);
       setError(err?.response?.data?.message || "Failed to fetch tickets");

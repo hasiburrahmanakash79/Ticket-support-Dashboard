@@ -1,56 +1,14 @@
-const initialUsers = [
-  {
-    name: "Alice Johnson",
-    email: "alice.johnson@example.com",
-    number: "+12345678901",
-    usertype: "customer",
-  },
-  {
-    name: "Bob Smith",
-    email: "bob.smith@example.com",
-    number: "+12345678902",
-    usertype: "distributor",
-  },
-  {
-    name: "Carol Davis",
-    email: "carol.davis@example.com",
-    number: "+12345678903",
-    usertype: "customer",
-  },
-  {
-    name: "David Wilson",
-    email: "david.wilson@example.com",
-    number: "+12345678904",
-    usertype: "distributor",
-  },
-  {
-    name: "Eva Brown",
-    email: "eva.brown@example.com",
-    number: "+12345678905",
-    usertype: "customer",
-  },
-  {
-    name: "Frank Miller",
-    email: "frank.miller@example.com",
-    number: "+12345678906",
-    usertype: "distributor",
-  },
-  {
-    name: "Grace Lee",
-    email: "grace.lee@example.com",
-    number: "+12345678907",
-    usertype: "customer",
-  },
-  {
-    name: "Henry Clark",
-    email: "henry.clark@example.com",
-    number: "+12345678908",
-    usertype: "distributor",
-  },
-];
+import useUser from "../../../components/hook/useUser";
+
 
 const RecentUser = () => {
-  const sliceUser = initialUsers.slice(0, 5);
+  const { users, loading, error } = useUser();
+  const sliceUser = users.slice(0, 5);
+
+console.log(users);
+
+  if (loading) return <div>Loading users...</div>;
+  if (error) return <div>Error loading users!</div>;
 
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl p-5">
@@ -67,10 +25,10 @@ const RecentUser = () => {
         <tbody className="text-sm text-center">
           {sliceUser.map((user, idx) => (
             <tr key={idx} className="border-t border-gray-200">
-              <td className="py-3 px-4 text-left">{user.name}</td>
+              <td className="py-3 px-4 text-left">{user.userProfile.nickname || 'N/A'}</td>
               <td className="py-4 px-4">{user.email}</td>
-              <td className="py-3 px-4">{user.number}</td>
-              <td className="py-3 px-4">{user.usertype}</td>
+              <td className="py-3 px-4">{user.userProfile.phone || 'N/A'}</td>
+              <td className="py-3 px-4">{user.role}</td>
             </tr>
           ))}
         </tbody>

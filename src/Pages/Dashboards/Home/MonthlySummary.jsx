@@ -1,65 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
+import dayjs from "dayjs";
+import useTicket from "../../../components/hook/useTicket";
 
-const MonthlySummary = () => {
+const TicketSummary = () => {
   const [selectedRange, setSelectedRange] = useState("Monthly");
+  const [chartData, setChartData] = useState([]);
+  const { tickets, loading } = useTicket([]);
 
-  // Sample Data Sets
-  const weeklyData = [
-    { date: "Apr 01", score: 3 },
-    { date: "Apr 08", score: 6 },
-    { date: "Apr 15", score: 4 },
-    { date: "Apr 22", score: 7 },
-    { date: "Apr 29", score: 5 },
-  ];
+  useEffect(() => {
+    if (loading || !tickets.length) return;
 
-  const monthlyData = [
-    { date: "Jan", score: 20 },
-    { date: "Feb", score: 35 },
-    { date: "Mar", score: 28 },
-    { date: "Apr", score: 40 },
-    { date: "May", score: 32 },
-    { date: "Jun", score: 42 },
-    { date: "Jul", score: 52 },
-    { date: "Aug", score: 32 },
-    { date: "Sep", score: 52 },
-    { date: "Oct", score: 22 },
-    { date: "Nov", score: 32 },
-    { date: "Dec", score: 12 },
-  ];
+    const today = dayjs();
 
-  const yearlyData = [
-    { date: "2020", score: 180 },
-    { date: "2021", score: 220 },
-    { date: "2022", score: 210 },
-    { date: "2023", score: 240 },
-    { date: "2024", score: 250 },
-  ];
+    const generateData = () => {
+      if (selectedRange === "Daily") {
+        return Array.from({ length: 7 }).map((_, i) => {
+          const date = today.subtract(6 - i, "day").startOf("day");
+          const label = date.format("DD MMM");
 
-  // Filter data based on selection
-  const getFilteredData = () => {
-    if (selectedRange === "Weekly") return weeklyData;
-    if (selectedRange === "Monthly") return monthlyData;
-    if (selectedRange === "Yearly") return yearlyData;
-    return [];
-  };
+          const count = tickets.filter((ticket) =>
+            dayjs(ticket.createdAt).isSame(date, "day")
+          ).length;
 
-  const filteredData = getFilteredData();
-  const xLabels = filteredData.map((item) => item.date);
-  const scores = filteredData.map((item) => item.score);
+          return { date: label, score: count };
+        });
+      }
+
+      if (selectedRange === "Weekly") {
+        return Array.from({ length: 6 }).map((_, i) => {
+          const startOfWeek = today.subtract(5 - i, "week").startOf("week");
+          const endOfWeek = startOfWeek.endOf("week");
+          const label = startOfWeek.format("DD MMM");
+
+          const count = tickets.filter((ticket) => {
+            const ticketDate = dayjs(ticket.createdAt);
+            return ticketDate.isAfter(startOfWeek.subtract(1, "day")) && ticketDate.isBefore(endOfWeek.add(1, "day"));
+          }).length;
+
+          return { date: label, score: count };
+        });
+      }
+
+      if (selectedRange === "Monthly") {
+        return Array.from({ length: 12 }).map((_, i) => {
+          const date = today.subtract(11 - i, "month").startOf("month");
+          const label = date.format("MMM");
+
+          const count = tickets.filter((ticket) =>
+            dayjs(ticket.createdAt).isSame(date, "month")
+          ).length;
+
+          return { date: label, score: count };
+        });
+      }
+
+      return [];
+    };
+
+    const data = generateData();
+    setChartData(data);
+  }, [selectedRange, tickets, loading]);
+
+  const xLabels = chartData.map((item) => item.date);
+  const scores = chartData.map((item) => item.score);
 
   return (
     <div className="border-2 border-gray-100 p-5 rounded-xl">
       <div className="pb-3 flex items-center justify-between">
-        <h4 className="font-semibold text-lg">Monthly Ticket Summary</h4>
+        <h4 className="font-semibold text-lg">Ticket Summary</h4>
         <select
           className="text-sm px-2 py-1 rounded-md outline-none text-gray-700"
           value={selectedRange}
           onChange={(e) => setSelectedRange(e.target.value)}
         >
+          <option value="Daily">Daily</option>
           <option value="Weekly">Weekly</option>
           <option value="Monthly">Monthly</option>
-          <option value="Yearly">Yearly</option>
         </select>
       </div>
 
@@ -88,7 +105,7 @@ const MonthlySummary = () => {
         series={[
           {
             data: scores,
-            label: "Score",
+            label: "Tickets",
             color: "#3B82F6",
             curve: "monotone",
           },
@@ -107,4 +124,4 @@ const MonthlySummary = () => {
   );
 };
 
-export default MonthlySummary;
+export default TicketSummary;

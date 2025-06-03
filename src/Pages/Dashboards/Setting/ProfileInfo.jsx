@@ -1,21 +1,39 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { FaCamera } from "react-icons/fa";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import useAdmin from "../../../components/hook/useAdmin";
+import apiClient from "../../../lib/api-client";
 
 const ProfileInformation = () => {
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef(null);
+  const { admin, loading } = useAdmin();
+  const navigate = useNavigate();
+  console.log(admin, "Admin Data");
 
   const [formData, setFormData] = useState({
-    name: "Sharon",
-    email: "alkhahsalkgsalkgsalk@gmail.com",
-    phone: "12423000597212",
-    role: "Admin",
-    profileImage: "https://i.pravatar.cc/100",
+    name: "",
+    email: "",
+    phone: "",
+    role: "",
+    profileImage: "",
   });
+
+  // 🟨 useEffect: admin data load hole formData set
+  useEffect(() => {
+    if (admin) {
+      setFormData({
+        name: admin.userProfile.fullName || "",
+        email: admin.email || "",
+        phone: admin.phone || "",
+        role: admin.role || "Admin",
+        profileImage: admin.profileImage || "https://i.pravatar.cc/100",
+      });
+    }
+  }, [admin]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({
@@ -32,26 +50,30 @@ const ProfileInformation = () => {
         ...prev,
         profileImage: imageUrl,
       }));
+      // Optional: Send file to server via formData if needed
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsEditing(false);
-    console.log(formData); // Save API call here
+    try {
+      await apiClient.put(`/user/update-profile-data/${admin._id}`, formData); // replace with your API path
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update admin info", error);
+    }
   };
 
-  const navigate = useNavigate();
-
+  if (loading) return <p>Loading...</p>;
 
   return (
     <form onSubmit={handleSubmit} className="p-4">
       <div className="flex justify-between items-center mb-6 pb-4">
         <div className="flex items-center gap-3">
           <button className="text-2xl" onClick={() => navigate(-1)}>
-          <RiArrowLeftLine />
-        </button>
-        <h2 className="font-semibold text-2xl">Personal Information</h2>
+            <RiArrowLeftLine />
+          </button>
+          <h2 className="font-semibold text-2xl">Personal Information</h2>
         </div>
         {!isEditing && (
           <button
@@ -101,7 +123,7 @@ const ProfileInformation = () => {
             <label className="block mb-1">Name</label>
             <input
               type="text"
-              value={formData.name}
+              value={formData.userProfile?.fullName || formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
               disabled={!isEditing}
               className="w-full bg-blue-100 rounded px-3 py-2 outline-none"

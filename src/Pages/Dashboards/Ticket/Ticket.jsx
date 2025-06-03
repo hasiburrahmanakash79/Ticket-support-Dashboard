@@ -73,15 +73,18 @@ const Ticket = () => {
   const handleEdit = (ticket) => {
     setEditTicket(ticket);
     setEditStatus(ticket.status);
-    setOriginalStatus(ticket.status); // Store the original status
+    setOriginalStatus(ticket.status);
     setIsEditModalOpen(true);
-    setUpdateError("");
   };
 
   const saveEdit = async () => {
     if (!editTicket) return;
 
-    // Check if the status has changed
+    if (originalStatus === "Solved" && editStatus === "Rejected") {
+      setUpdateError("Solved ticket cannot be changed to Rejected.");
+      return;
+    }
+
     if (originalStatus === editStatus) {
       setIsEditModalOpen(false);
       setEditTicket(null);
@@ -96,6 +99,7 @@ const Ticket = () => {
       const response = await apiClient.patch(`/ticket/${editTicket._id}`, {
         status: editStatus,
       });
+
       console.log("Ticket updated successfully:", response.data);
       setIsEditModalOpen(false);
       setEditTicket(null);
@@ -122,14 +126,14 @@ const Ticket = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Open":
-        return "text-red-500";
+      case "Pending":
+        return "text-gray-500";
       case "InProgress":
         return "text-yellow-500";
-      case "Resolved":
+      case "Solved":
         return "text-green-600";
       default:
-        return "text-gray-500";
+        return "text-red-500";
     }
   };
 
@@ -182,7 +186,26 @@ const Ticket = () => {
                 </td>
                 <td className="py-3 px-4">{ticket.userProfile?.fullName}</td>
                 <td className="py-3 px-4">{ticket.userProfile?.user?.email}</td>
-                <td className="py-3 px-4">{ticket.issue}</td>
+                <td className="py-3 px-4">
+                  {Array.isArray(ticket.issue) ? (
+                    ticket.issue.length <= 2 ? (
+                      ticket.issue
+                        .map((issue, index) => `${index + 1}. ${issue}`)
+                        .join(", ")
+                    ) : (
+                      <>
+                        {ticket.issue
+                          .slice(0, 2)
+                          .map((issue, index) => `${index + 1}. ${issue}`)
+                          .join(", ")}
+                        {` +${ticket.issue.length - 2} more`}
+                      </>
+                    )
+                  ) : (
+                    ticket.issue
+                  )}
+                </td>
+
                 <td
                   className={`py-3 px-4 font-medium ${getStatusColor(
                     ticket.status
@@ -191,10 +214,13 @@ const Ticket = () => {
                   {ticket.status}
                 </td>
                 <td className="py-3 px-4 flex justify-center gap-10">
-                  <FaRegPenToSquare
-                    className="text-blue-500 cursor-pointer"
-                    onClick={() => handleEdit(ticket)}
-                  />
+                  {(ticket.status === "Pending" ||
+                    ticket.status === "InProgress") && (
+                    <FaRegPenToSquare
+                      className="text-blue-500 cursor-pointer"
+                      onClick={() => handleEdit(ticket)}
+                    />
+                  )}
                   <FaRegTrashCan
                     className="text-red-500 cursor-pointer"
                     onClick={() => handleDelete(ticket)}
@@ -295,17 +321,19 @@ const Ticket = () => {
               <div className="flex gap-3 items-center">
                 <label className="block font-medium mb-1">Status:</label>
                 <select
-                  className="border border-gray-100 rounded px-3 py-1 outline-none"
+                  className="border border-gray-300 rounded px-2 w-full"
                   value={editStatus}
-                  onChange={(e) => {
-                    setEditStatus(e.target.value);
-                    setUpdateError("");
-                  }}
+                  onChange={(e) => setEditStatus(e.target.value)}
                 >
                   <option value="Pending">Pending</option>
-                  <option value="InProgress">InProgress</option>
+                  <option value="InProgress">In Progress</option>
                   <option value="Solved">Solved</option>
-                  <option value="Rejected">Rejected</option>
+                  <option
+                    value="Rejected"
+                    disabled={originalStatus === "Solved"}
+                  >
+                    Rejected
+                  </option>
                 </select>
               </div>
             </div>
