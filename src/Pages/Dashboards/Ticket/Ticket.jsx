@@ -1,138 +1,130 @@
-import { useState } from "react";
-import CommonModal from "../../../components/Common/CommonModal";
+import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import CommonModal from "../../../components/Common/CommonModal";
+import useTicket from "../../../components/hook/useTicket";
+import apiClient from "../../../lib/api-client";
 
-// Dummy Ticket Data
-const ticketData = [
-  {
-    id: "TCKT001",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    issueType: "Login Issue",
-    issueDate: "2025-05-01",
-    status: "Open",
-  },
-  {
-    id: "TCKT002",
-    name: "Bob Smith",
-    email: "bob@example.com",
-    issueType: "Payment Failed",
-    issueDate: "2025-05-02",
-    status: "In Progress",
-  },
-  {
-    id: "TCKT003",
-    name: "Carol Davis",
-    email: "carol@example.com",
-    issueType: "App Crash",
-    issueDate: "2025-05-03",
-    status: "Resolved",
-  },
-  {
-    id: "TCKT004",
-    name: "David Wilson",
-    email: "david@example.com",
-    issueType: "Slow Performance",
-    issueDate: "2025-05-04",
-    status: "Open",
-  },
-  {
-    id: "TCKT005",
-    name: "Eva Brown",
-    email: "eva@example.com",
-    issueType: "Missing Features",
-    issueDate: "2025-05-05",
-    status: "Open",
-  },
-  {
-    id: "TCKT006",
-    name: "Frank Miller",
-    email: "frank@example.com",
-    issueType: "Installation Problem",
-    issueDate: "2025-05-06",
-    status: "Resolved",
-  },
-  {
-    id: "TCKT007",
-    name: "Grace Lee",
-    email: "grace@example.com",
-    issueType: "Sync Issue",
-    issueDate: "2025-05-07",
-    status: "In Progress",
-  },
-  {
-    id: "TCKT008",
-    name: "Henry Clark",
-    email: "henry@example.com",
-    issueType: "Login Issue",
-    issueDate: "2025-05-08",
-    status: "Open",
-  },
-  {
-    id: "TCKT009",
-    name: "Ivy Hall",
-    email: "ivy@example.com",
-    issueType: "Password Reset",
-    issueDate: "2025-05-09",
-    status: "Resolved",
-  },
-  {
-    id: "TCKT010",
-    name: "Jack Turner",
-    email: "jack@example.com",
-    issueType: "Bug Report",
-    issueDate: "2025-05-10",
-    status: "In Progress",
-  },
-];
+// Debounce hook for search optimization
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 
 const Ticket = () => {
-  const [tickets, setTickets] = useState(ticketData);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+
+  // Debounce search term to avoid excessive API calls
+  const debouncedSearchTerm = useDebounce(searchInput, 500);
+
+  const { tickets, loading, error, totalPages, refetch } = useTicket({
+    page,
+    status,
+    searchTerm: debouncedSearchTerm,
+  });
 
   const [deleteTicket, setDeleteTicket] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [editTicket, setEditTicket] = useState(null);
   const [editStatus, setEditStatus] = useState("");
+  const [originalStatus, setOriginalStatus] = useState(""); // Track original status
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState("");
+
+  // Reset page when search or status changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchTerm, status]);
 
   const handleDelete = (ticket) => {
     setDeleteTicket(ticket);
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    const updated = tickets.filter((t) => t.id !== deleteTicket.id);
-    setTickets(updated);
-    setIsDeleteModalOpen(false);
+  const confirmDelete = async () => {
+    try {
+      if (!deleteTicket?._id) return;
+      await apiClient.delete(`/ticket/${deleteTicket._id}`);
+      setIsDeleteModalOpen(false);
+      setDeleteTicket(null);
+      refetch();
+    } catch (err) {
+      console.error("Failed to delete ticket", err);
+      alert(err.response?.data?.message || "Failed to delete ticket");
+    }
   };
 
   const handleEdit = (ticket) => {
     setEditTicket(ticket);
     setEditStatus(ticket.status);
+    setOriginalStatus(ticket.status); // Store the original status
     setIsEditModalOpen(true);
+    setUpdateError("");
   };
 
-  const saveEdit = () => {
-    const updated = tickets.map((t) =>
-      t.id === editTicket.id ? { ...t, status: editStatus } : t
-    );
-    setTickets(updated);
+  const saveEdit = async () => {
+    if (!editTicket) return;
+
+    // Check if the status has changed
+    if (originalStatus === editStatus) {
+      setIsEditModalOpen(false);
+      setEditTicket(null);
+      setUpdateError("");
+      return;
+    }
+
+    setIsUpdating(true);
+    setUpdateError("");
+
+    try {
+      const response = await apiClient.patch(`/ticket/${editTicket._id}`, {
+        status: editStatus,
+      });
+      console.log("Ticket updated successfully:", response.data);
+      setIsEditModalOpen(false);
+      setEditTicket(null);
+      setOriginalStatus("");
+      refetch();
+    } catch (error) {
+      console.error("Failed to update ticket", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to update ticket";
+      setUpdateError(errorMessage);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const closeEditModal = () => {
     setIsEditModalOpen(false);
+    setEditTicket(null);
+    setEditStatus("");
+    setOriginalStatus("");
+    setUpdateError("");
+    setIsUpdating(false);
   };
-
-  const filteredTickets = tickets.filter((ticket) =>
-    ticket.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const getStatusColor = (status) => {
     switch (status) {
       case "Open":
         return "text-red-500";
-      case "In Progress":
+      case "InProgress":
         return "text-yellow-500";
       case "Resolved":
         return "text-green-600";
@@ -140,6 +132,13 @@ const Ticket = () => {
         return "text-gray-500";
     }
   };
+
+  // Check if status has actually changed
+  const hasStatusChanged = originalStatus !== editStatus;
+  const canSave = hasStatusChanged && !isUpdating;
+
+  if (loading) return <p>Loading tickets...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl p-5">
@@ -149,11 +148,17 @@ const Ticket = () => {
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by Ticket ID..."
+            placeholder="Search by email..."
             className="w-full border border-gray-300 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
+          {/* Show searching indicator */}
+          {searchInput !== debouncedSearchTerm && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -169,15 +174,15 @@ const Ticket = () => {
           </tr>
         </thead>
         <tbody className="text-sm text-center">
-          {filteredTickets.length > 0 ? (
-            filteredTickets.map((ticket) => (
-              <tr key={ticket.id} className="border-t border-gray-200">
+          {tickets.length > 0 ? (
+            tickets.map((ticket) => (
+              <tr key={ticket._id} className="border-t border-gray-200">
                 <td className="py-3 px-4 text-left hover:text-blue-500 hover:underline">
-                  <Link to={`/ticket_details/${ticket.id}`}>{ticket.id}</Link>
+                  <Link to={`/ticket_details/${ticket._id}`}>{ticket._id}</Link>
                 </td>
-                <td className="py-3 px-4">{ticket.name}</td>
-                <td className="py-3 px-4">{ticket.email}</td>
-                <td className="py-3 px-4">{ticket.issueType}</td>
+                <td className="py-3 px-4">{ticket.userProfile?.fullName}</td>
+                <td className="py-3 px-4">{ticket.userProfile?.user?.email}</td>
+                <td className="py-3 px-4">{ticket.issue}</td>
                 <td
                   className={`py-3 px-4 font-medium ${getStatusColor(
                     ticket.status
@@ -207,7 +212,24 @@ const Ticket = () => {
         </tbody>
       </table>
 
-      {/* 🗑️ Delete Modal */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4 space-x-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                page === i + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
+
       <CommonModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -233,55 +255,83 @@ const Ticket = () => {
         </div>
       </CommonModal>
 
-      {/* Edit Modal */}
-      <CommonModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-      >
+      <CommonModal isOpen={isEditModalOpen} onClose={closeEditModal}>
         {editTicket && (
           <div className="space-y-4 px-4 py-2">
             <h2 className="text-xl font-semibold">Ticket Details</h2>
+
+            {/* Error message display */}
+            {updateError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {updateError}
+              </div>
+            )}
+
+            {/* Status change indicator */}
+            {hasStatusChanged && (
+              <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded">
+                Status will change from <strong>{originalStatus}</strong> to{" "}
+                <strong>{editStatus}</strong>
+              </div>
+            )}
+
             <div className="space-y-4 text-sm">
               <p>
-                <strong>Ticket ID:</strong> {editTicket.id}
+                <strong>Ticket ID:</strong> {editTicket._id}
               </p>
               <p>
-                <strong>Name:</strong> {editTicket.name}
+                <strong>Name:</strong> {editTicket.userProfile?.fullName}
               </p>
               <p>
-                <strong>Email:</strong> {editTicket.email}
+                <strong>Email:</strong> {editTicket.userProfile?.user?.email}
               </p>
               <p>
-                <strong>Issue Type:</strong> {editTicket.issueType}
+                <strong>Issue Type:</strong> {editTicket.issue}
               </p>
               <p>
-                <strong>Issue Date:</strong> {editTicket.issueDate}
+                <strong>Issue Date:</strong>{" "}
+                {new Date(editTicket.createdAt).toLocaleDateString()}
               </p>
               <div className="flex gap-3 items-center">
                 <label className="block font-medium mb-1">Status:</label>
                 <select
-                  className=" border border-gray-100 rounded px-3 py-1 outline-none"
+                  className="border border-gray-100 rounded px-3 py-1 outline-none"
                   value={editStatus}
-                  onChange={(e) => setEditStatus(e.target.value)}
+                  onChange={(e) => {
+                    setEditStatus(e.target.value);
+                    setUpdateError("");
+                  }}
                 >
-                  <option>Open</option>
-                  <option>In Progress</option>
-                  <option>Resolved</option>
+                  <option value="Pending">Pending</option>
+                  <option value="InProgress">InProgress</option>
+                  <option value="Solved">Solved</option>
+                  <option value="Rejected">Rejected</option>
                 </select>
               </div>
             </div>
             <div className="flex justify-center gap-4 pt-4 w-full">
               <button
-                onClick={() => setIsEditModalOpen(false)}
+                onClick={closeEditModal}
                 className="border border-blue-500 text-blue-500 px-6 py-2 rounded hover:bg-blue-50 w-full"
+                disabled={isUpdating}
               >
                 Cancel
               </button>
               <button
                 onClick={saveEdit}
-                className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 w-full"
+                className={`px-6 py-2 rounded w-full transition-colors ${
+                  canSave
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                disabled={!canSave}
+                title={!hasStatusChanged ? "No changes to save" : ""}
               >
-                Save
+                {isUpdating
+                  ? "Saving..."
+                  : hasStatusChanged
+                  ? "Save Changes"
+                  : "No Changes"}
               </button>
             </div>
           </div>

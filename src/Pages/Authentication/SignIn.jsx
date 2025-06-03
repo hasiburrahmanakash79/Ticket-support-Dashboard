@@ -27,9 +27,7 @@ const SignIn = () => {
 
     try {
       const res = await apiClient.post("/auth/login", data);
-      console.log(res);
-      console.log("SignIn Data:", data);
-
+    
       if (res?.data?.data?.accessToken) {
         const accessToken = res.data.data.accessToken;
         const refreshToken = res.data.data.refreshToken;

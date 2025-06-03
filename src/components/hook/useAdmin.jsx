@@ -9,7 +9,6 @@ const useAdmin = () => {
     const fetchAdmin = async () => {
       try {
         const res = await apiClient.get("/user/me");
-        console.log("Fetched Admin:", res.data.data.role);
         setAdmin(res.data.data);
       } catch (error) {
         console.error("Error fetching admin data:", error);

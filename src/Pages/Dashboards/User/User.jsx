@@ -81,7 +81,6 @@ const User = () => {
     );
   });
 
-  console.log("Filtered Users:", filteredUsers);
 
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl p-5">

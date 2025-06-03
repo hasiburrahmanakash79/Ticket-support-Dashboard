@@ -16,25 +16,23 @@ const Dashboard = () => {
 
   const { admin, loading } = useAdmin();
 
-  console.log(admin, loading);
-
   const navigate = useNavigate(); // Add this at the top inside Dashboard component
 
-const handleLogout = () => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You want to logout!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, Logout!",
-    cancelButtonText: "No, Cancel!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      removeAuthTokens(); // Clears cookies
-      navigate("/signin"); // Redirect to Sign In page
-    }
-  });
-};
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to logout!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Logout!",
+      cancelButtonText: "No, Cancel!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeAuthTokens(); // Clears cookies
+        navigate("/signin"); // Redirect to Sign In page
+      }
+    });
+  };
 
   const iconMappings = {
     Home: BiHomeAlt2,
@@ -79,6 +77,8 @@ const handleLogout = () => {
   ];
 
   const adminMenus = Menus.filter((menu) => menu.role === "admin");
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="flex">
@@ -157,7 +157,9 @@ const handleLogout = () => {
               />
             </div>
             <div>
-              <span className="font-medium text-gray-800">{admin?.userProfile?.fullName}</span>
+              <span className="font-medium text-gray-800">
+                {admin?.userProfile?.fullName}
+              </span>
               <p className="text-gray-500 text-sm">{admin?.role}</p>
             </div>
           </div>
