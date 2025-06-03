@@ -4,55 +4,53 @@ import { FiSend } from "react-icons/fi";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { useNavigate, useParams } from "react-router-dom";
 import useTicket from "../../../components/hook/useTicket";
-
-const initialMessages = [
-  {
-    sender: "user",
-    name: "John Max",
-    time: "12:00 AM",
-    avatar: "https://randomuser.me/api/portraits/men/75.jpg",
-    text: "The battery drains very quickly, even after a full charge. It barely lasts 10 minutes in flight, and sometimes the drone shuts off mid-air.",
-  },
-  {
-    sender: "admin",
-    name: "Support Admin",
-    time: "12:05 AM",
-    avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-    text: "It sounds like there may be a problem with the battery health or power distribution. Please ensure you're using an original battery and avoid overcharging. We recommend replacing the battery if it’s been in use for a long time. Our technical team will review your ticket and get back to you shortly.",
-  },
-];
+import useConversation from "../../../components/hook/useConversation";
+import apiClient from "../../../lib/api-client";
 
 const Conversation = () => {
-  const [messages, setMessages] = useState(initialMessages);
+  // chat/6836b2caba0ee0418258ead6
+
   const [newMessage, setNewMessage] = useState("");
-
+  const { id } = useParams(); // get ticketId from route
   const { tickets, loading } = useTicket([]);
+  const { chat, loading: chatLoading } = useConversation(id); // pass id to hook
+  console.log(chat.data, "Chat Data"); //here showing chat data
 
-  const { id } = useParams();
   const navigate = useNavigate();
 
   const ticket = tickets.find((ticket) => ticket._id === id);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (newMessage.trim() === "") return;
 
     const newMsg = {
       sender: "admin",
-      name: "Support Admin",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-      text: newMessage,
+      messages: newMessage,
     };
 
-    setMessages([...messages, newMsg]);
-    setNewMessage("");
+    try {
+      await apiClient.post(`/chat/${id}`, newMsg);
+
+      // Optional: locally show the message without refetching
+      const localMsg = {
+        ...newMsg,
+        name: "Support Admin",
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        avatar: "https://randomuser.me/api/portraits/women/65.jpg",
+        text: newMessage,
+      };
+
+      setMessages((prev) => [...prev, localMsg]);
+      setNewMessage("");
+    } catch (err) {
+      console.error("Failed to send message", err);
+    }
   };
 
   if (loading) return <div>Loading...</div>;
-  console.log(ticket, "Ticket Details");
 
   return (
     <div>
@@ -111,7 +109,7 @@ const Conversation = () => {
       </div>
       <h2 className="text-xl font-semibold mb-3">Recent Conversation</h2>
       <div className="p-4 bg-white rounded-xl border border-gray-200">
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           {messages.map((msg, idx) =>
             msg.sender === "user" ? (
               <div key={idx} className="flex gap-3">
@@ -144,6 +142,59 @@ const Conversation = () => {
                   alt={msg.name}
                   className="w-8 h-8 rounded-full"
                 />
+              </div>
+            )
+          )}
+        </div> */}
+
+        <div className="space-y-4">
+          {chat?.data?.map((msg, idx) =>
+            msg.sender === "admin" ? (
+              // Right side for admin
+              <div key={`admin-${idx}`} className="flex justify-end gap-3">
+                <div className="bg-gray-200 text-gray-800 rounded-xl px-4 py-2 max-w-lg text-left">
+                  <div className="flex items-center justify-between">
+                    <p className="text-right font-semibold">You</p>
+                    <span className="text-xs text-gray-400 block text-right">
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div>{msg.messages}</div>
+                </div>
+                <img
+                  src="https://randomuser.me/api/portraits/women/65.jpg"
+                  alt="Admin"
+                  className="w-8 h-8 rounded-full"
+                />
+              </div>
+            ) : (
+              // Left side for user
+              <div key={`user-${idx}`} className="flex gap-3">
+                <img
+                  src={
+                    ticket?.userProfile?.avatar ||
+                    "https://randomuser.me/api/portraits/men/75.jpg"
+                  }
+                  alt={ticket?.userProfile?.fullName}
+                  className="w-8 h-8 rounded-full"
+                />
+                <div className="bg-blue-100 text-gray-800 rounded-xl px-4 py-2 max-w-lg">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">
+                      {ticket?.userProfile?.fullName}
+                    </p>
+                    <span className="text-xs text-gray-400">
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div>{msg.messages}</div>
+                </div>
               </div>
             )
           )}

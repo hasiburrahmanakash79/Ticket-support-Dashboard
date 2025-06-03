@@ -5,7 +5,7 @@ const RecentTicket = () => {
 
   const { tickets, loading } = useTicket([]);
 
-    const sliceTicket = tickets.slice(0, 6);
+    const sliceTicket = tickets?.slice(0, 6);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -37,37 +37,37 @@ const RecentTicket = () => {
         </thead>
         <tbody className="text-sm text-center">
           {sliceTicket.map((ticket) => (
-            <tr key={ticket.id} className="border-t border-gray-200">
+            <tr key={ticket?._id} className="border-t border-gray-200">
               <td className="py-3 px-4 text-left hover:text-blue-500 hover:underline">
-                  <Link to={`/ticket_details/${ticket._id}`}>{ticket._id}</Link>
+                  <Link to={`/ticket_details/${ticket?._id}`}>{ticket?._id}</Link>
                 </td>
-                <td className="py-3 px-4">{ticket.userProfile?.fullName}</td>
+                <td className="py-3 px-4">{ticket?.userProfile?.fullName}</td>
                 <td className="py-3 px-4">
-                  {Array.isArray(ticket.issue) ? (
-                    ticket.issue.length <= 1 ? (
-                      ticket.issue
+                  {Array.isArray(ticket?.issue) ? (
+                    ticket?.issue?.length <= 1 ? (
+                      ticket?.issue
                         .map((issue, index) => `${index + 1}. ${issue}`)
                         .join(", ")
                     ) : (
                       <>
-                        {ticket.issue
+                        {ticket?.issue
                           .slice(0, 1)
                           .map((issue, index) => `${index + 1}. ${issue}`)
                           .join(", ")}
-                        {` +${ticket.issue.length - 1} more`}
+                        {` +${ticket?.issue?.length - 1} more`}
                       </>
                     )
                   ) : (
-                    ticket.issue
+                    ticket?.issue
                   )}
                 </td>
 
                 <td
                   className={`py-3 px-4 font-medium ${getStatusColor(
-                    ticket.status
+                    ticket?.status
                   )}`}
                 >
-                  {ticket.status}
+                  {ticket?.status}
                 </td>
             </tr>
           ))}

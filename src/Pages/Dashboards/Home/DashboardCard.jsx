@@ -9,11 +9,11 @@ import useTicket from "../../../components/hook/useTicket";
 
 const DashboardCard = () => {
   const {tickets, loading,} = useTicket([])
-  const resolvedTickets = tickets.filter(ticket => ticket.status === 'Solved');
-  const pendingTickets = tickets.filter(ticket => ticket.status === 'Pending');
+  const resolvedTickets = tickets.filter(ticket => ticket?.status === 'Solved');
+  const pendingTickets = tickets.filter(ticket => ticket?.status === 'Pending');
   const todaySubmittedTickets = tickets.filter(ticket => {
     const today = new Date();
-    const ticketDate = new Date(ticket.createdAt);
+    const ticketDate = new Date(ticket?.createdAt);
     return (
       ticketDate.getDate() === today.getDate() &&
       ticketDate.getMonth() === today.getMonth() &&
@@ -30,7 +30,7 @@ const DashboardCard = () => {
             <FaClipboardList className="text-6xl" />
             <div className="space-y-3">
               <p className="text-lg">Total Ticket</p>
-              <h1 className="text-4xl font-semibold">{tickets.length}</h1>
+              <h1 className="text-4xl font-semibold">{tickets?.length}</h1>
             </div>
           </div>
         </div>
@@ -39,7 +39,7 @@ const DashboardCard = () => {
             <FaClipboardQuestion className="text-6xl" />
             <div className="space-y-3">
               <p className="text-lg">Ticket Pending</p>
-              <h1 className="text-4xl font-semibold">{pendingTickets.length}</h1>
+              <h1 className="text-4xl font-semibold">{pendingTickets?.length}</h1>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ const DashboardCard = () => {
             <FaClipboardCheck className="text-6xl" />
             <div className="space-y-3">
               <p className="text-lg">Resolved Ticket</p>
-              <h1 className="text-4xl font-semibold">{resolvedTickets.length}</h1>
+              <h1 className="text-4xl font-semibold">{resolvedTickets?.length}</h1>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@ const DashboardCard = () => {
           <FaChartColumn className="text-6xl" />
           <div className="space-y-3">
             <p className="text-lg">New Submission Today</p>
-            <h1 className="text-4xl font-semibold">{todaySubmittedTickets.length}</h1>
+            <h1 className="text-4xl font-semibold">{todaySubmittedTickets?.length}</h1>
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ const TicketSummary = () => {
   const { tickets, loading } = useTicket([]);
 
   useEffect(() => {
-    if (loading || !tickets.length) return;
+    if (loading || !tickets?.length) return;
 
     const today = dayjs();
 
@@ -20,7 +20,7 @@ const TicketSummary = () => {
           const label = date.format("DD MMM");
 
           const count = tickets.filter((ticket) =>
-            dayjs(ticket.createdAt).isSame(date, "day")
+            dayjs(ticket?.createdAt).isSame(date, "day")
           ).length;
 
           return { date: label, score: count };
@@ -34,7 +34,7 @@ const TicketSummary = () => {
           const label = startOfWeek.format("DD MMM");
 
           const count = tickets.filter((ticket) => {
-            const ticketDate = dayjs(ticket.createdAt);
+            const ticketDate = dayjs(ticket?.createdAt);
             return ticketDate.isAfter(startOfWeek.subtract(1, "day")) && ticketDate.isBefore(endOfWeek.add(1, "day"));
           }).length;
 
@@ -48,7 +48,7 @@ const TicketSummary = () => {
           const label = date.format("MMM");
 
           const count = tickets.filter((ticket) =>
-            dayjs(ticket.createdAt).isSame(date, "month")
+            dayjs(ticket?.createdAt).isSame(date, "month")
           ).length;
 
           return { date: label, score: count };
@@ -62,8 +62,8 @@ const TicketSummary = () => {
     setChartData(data);
   }, [selectedRange, tickets, loading]);
 
-  const xLabels = chartData.map((item) => item.date);
-  const scores = chartData.map((item) => item.score);
+  const xLabels = chartData.map((item) => item?.date);
+  const scores = chartData.map((item) => item?.score);
 
   return (
     <div className="border-2 border-gray-100 p-5 rounded-xl">
