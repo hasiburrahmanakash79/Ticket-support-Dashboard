@@ -13,7 +13,7 @@ const Conversation = () => {
   const [newMessage, setNewMessage] = useState("");
   const { id } = useParams(); // get ticketId from route
   const { tickets, loading } = useTicket([]);
-  const { chat, loading: chatLoading } = useConversation(id); // pass id to hook
+  const { chat, loading: chatLoading  } = useConversation(id); // pass id to hook
   console.log(chat.data, "Chat Data"); //here showing chat data
 
   const navigate = useNavigate();
@@ -51,6 +51,8 @@ const Conversation = () => {
   };
 
   if (loading) return <div>Loading...</div>;
+  if (chatLoading) return <div>Conversation Loading...</div>;
+
 
   return (
     <div>
