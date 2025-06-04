@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../../assets/logo/logo.png"
+import logo from "../../assets/logo/logo.png";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -28,10 +28,10 @@ const SignIn = () => {
 
     try {
       const res = await apiClient.post("/auth/login", data);
-    
+
       if (res?.data?.data?.accessToken) {
-        const accessToken = res.data.data.accessToken;
-        const refreshToken = res.data.data.refreshToken;
+        const accessToken = res?.data?.data?.accessToken;
+        const refreshToken = res?.data?.data?.refreshToken;
 
         // ✅ Save in cookie (not just localStorage)
         setCookie("accessToken", accessToken, { maxAge: 30 * 60 }); // 30 mins
@@ -114,7 +114,6 @@ const SignIn = () => {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-end text-sm">
-              
               <a
                 href="/forgot-password"
                 className="text-blue-500 hover:underline text-end"

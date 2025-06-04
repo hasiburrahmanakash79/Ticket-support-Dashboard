@@ -1,58 +1,114 @@
-// import React from 'react';
 import { useState } from "react";
-import { FiSend } from "react-icons/fi";
+import { FiSend, FiLock } from "react-icons/fi";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import useTicket from "../../../components/hook/useTicket";
 import useConversation from "../../../components/hook/useConversation";
 import apiClient from "../../../lib/api-client";
+import useAdmin from "../../../components/hook/useAdmin";
 
 const Conversation = () => {
-  // chat/6836b2caba0ee0418258ead6
-
   const [newMessage, setNewMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const { id } = useParams(); // get ticketId from route
   const { tickets, loading } = useTicket([]);
-  const { chat, loading: chatLoading  } = useConversation(id); // pass id to hook
-  console.log(chat.data, "Chat Data"); //here showing chat data
+  const { chat, loading: chatLoading, refetch } = useConversation(id);
+  const { admin } = useAdmin();
 
   const navigate = useNavigate();
-
   const ticket = tickets.find((ticket) => ticket._id === id);
 
+  // Check if ticket is closed/resolved
+  const isTicketClosed =
+    ticket?.status === "Resolved" || ticket?.status === "Closed";
+
+  // Function to check if message is from admin
+  const isAdminMessage = (msg) => {
+    return (
+      msg.sender === "admin" ||
+      msg.sender === admin?._id ||
+      msg.senderType === "admin" ||
+      msg.userType === "admin"
+    );
+  };
+
   const handleSend = async () => {
-    if (newMessage.trim() === "") return;
+    if (newMessage.trim() === "" || isSending) return;
+
+    // Check if ticket is closed before sending
+    if (isTicketClosed) {
+      toast.error("Cannot send message. This ticket is already resolved.", {
+        duration: 4000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    setIsSending(true);
 
     const newMsg = {
-      sender: "admin",
       messages: newMessage,
     };
 
     try {
-      await apiClient.post(`/chat/${id}`, newMsg);
 
-      // Optional: locally show the message without refetching
-      const localMsg = {
-        ...newMsg,
-        name: "Support Admin",
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-        text: newMessage,
-      };
+      const response = await apiClient.post(`/chat/${id}`, newMsg);
+      console.log("Message sent successfully:", response.data);
 
-      setNewMessage((prev) => [...prev, localMsg]);
-      // setNewMessage("");
+      setNewMessage("");
+
+      if (refetch) {
+        await refetch();
+      }
+
+      toast.success("Message sent!", {
+        duration: 2000,
+        position: "top-right",
+      });
     } catch (err) {
-      console.error("Failed to send message", err);
+      console.error("Failed to send message:", err);
+
+      let errorMessage = "Failed to send message. Please try again.";
+
+      if (err.response?.data?.message) {
+        const backendMessage = err.response.data.message;
+
+        if (backendMessage.includes("ticket is closed")) {
+          errorMessage =
+            "Cannot send message. This ticket is already resolved.";
+        } else if (backendMessage.includes("not found")) {
+          errorMessage = "Ticket not found. Please refresh the page.";
+        } else {
+          errorMessage = backendMessage;
+        }
+      }
+
+      // Show error toast
+      toast.error(errorMessage, {
+        duration: 4000,
+        position: "top-right",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Open":
+        return "text-red-500 bg-red-50 border-red-200";
+      case "InProgress":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "Resolved":
+        return "text-green-600 bg-green-50 border-green-200";
+      default:
+        return "text-gray-500 bg-gray-50 border-gray-200";
     }
   };
 
   if (loading) return <div>Loading...</div>;
   if (chatLoading) return <div>Conversation Loading...</div>;
-
 
   return (
     <div>
@@ -60,9 +116,21 @@ const Conversation = () => {
         <button className="text-2xl" onClick={() => navigate(-1)}>
           <RiArrowLeftLine />
         </button>
-        <h1 className="text-2xl font-semibold ">Ticket Details </h1>
+        <h1 className="text-2xl font-semibold">Ticket Details</h1>
+
+        {/* Status Badge */}
+        {ticket?.status && (
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+              ticket.status
+            )}`}
+          >
+            {ticket.status}
+          </span>
+        )}
       </div>
-      <div className="grid grid-cols-3 gap-10 my-10 ">
+
+      <div className="grid grid-cols-3 gap-10 my-10">
         <div className="space-y-4 text-sm col-span-1">
           <p>
             <strong>Ticket ID:</strong> {ticket?._id}
@@ -81,24 +149,34 @@ const Conversation = () => {
           </p>
           <p>
             <strong>Issue Type:</strong>{" "}
-            {Array.isArray(ticket.issue)
+            {Array.isArray(ticket?.issue)
               ? ticket.issue
                   .map((issue, index) => `${index + 1}. ${issue}`)
                   .join(", ")
-              : ticket.issue}
+              : ticket?.issue}
           </p>
           <p>
             <strong>Issue Date:</strong>{" "}
-            {new Date(ticket?.createdAt).toLocaleDateString() || "N/A"}
+            {ticket?.createdAt
+              ? new Date(ticket.createdAt).toLocaleDateString()
+              : "N/A"}
           </p>
           <p>
-            <strong>Status:</strong> {ticket?.status || "N/A"}
+            <strong>Status:</strong>
+            <span
+              className={`ml-2 px-2 py-1 rounded text-xs font-medium ${getStatusColor(
+                ticket?.status
+              )}`}
+            >
+              {ticket?.status || "N/A"}
+            </span>
           </p>
         </div>
+
         <div className="col-span-2">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {ticket?.images.map((img, index) => (
-              <div key={img.id} className="rounded overflow-hidden shadow-md">
+            {ticket?.images?.map((img, index) => (
+              <div key={index} className="rounded overflow-hidden shadow-md">
                 <img
                   src={`http://192.168.10.18:5001${img}`}
                   alt={`Ticket image ${index + 1}`}
@@ -109,116 +187,139 @@ const Conversation = () => {
           </div>
         </div>
       </div>
-      <h2 className="text-xl font-semibold mb-3">Recent Conversation</h2>
-      <div className="p-4 bg-white rounded-xl border border-gray-200">
-        {/* <div className="space-y-4">
-          {messages.map((msg, idx) =>
-            msg.sender === "user" ? (
-              <div key={idx} className="flex gap-3">
-                <img
-                  src={msg.avatar}
-                  alt={msg.name}
-                  className="w-8 h-8 rounded-full"
-                />
-                <div className="bg-blue-100 text-gray-800 rounded-xl px-4 py-2 max-w-lg">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">{msg.name}</p>
-                    <span className="text-xs text-gray-400">{msg.time}</span>
-                  </div>
-                  <div>{msg.text}</div>
-                </div>
-              </div>
-            ) : (
-              <div key={idx} className="flex justify-end gap-3">
-                <div className="bg-gray-200 text-gray-800 rounded-xl px-4 py-2 max-w-lg text-left">
-                  <div className="flex items-center justify-between">
-                    <p className="text-right font-semibold">You</p>
-                    <span className="text-xs text-gray-400 block text-right">
-                      {msg.time}
-                    </span>
-                  </div>
-                  <div>{msg.text}</div>
-                </div>
-                <img
-                  src={msg.avatar}
-                  alt={msg.name}
-                  className="w-8 h-8 rounded-full"
-                />
-              </div>
-            )
-          )}
-        </div> */}
 
-        <div className="space-y-4">
-          {chat?.data?.map((msg, idx) =>
-            msg.sender === "admin" ? (
-              // Right side for admin
-              <div key={`admin-${idx}`} className="flex justify-end gap-3">
-                <div className="bg-gray-200 text-gray-800 rounded-xl px-4 py-2 max-w-lg text-left">
-                  <div className="flex items-center justify-between">
-                    <p className="text-right font-semibold">You</p>
-                    <span className="text-xs text-gray-400 block text-right">
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+      <h2 className="text-xl font-semibold mb-3">Recent Conversation</h2>
+
+      <div className="p-4 bg-white rounded-xl border border-gray-200">
+        {/* Closed Ticket Warning */}
+        {isTicketClosed && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
+            <FiLock className="text-yellow-600" />
+            <span className="text-yellow-700 text-sm font-medium">
+              This ticket is resolved. No new messages can be sent.
+            </span>
+          </div>
+        )}
+
+        {/* Chat Messages */}
+        <div className="space-y-4 max-h-96 overflow-y-auto">
+          {chat?.data?.length > 0 ? (
+            chat.data.map((msg, idx) =>
+              isAdminMessage(msg) ? (
+                // 🟢 RIGHT SIDE - ADMIN MESSAGES
+                <div
+                  key={`admin-${idx}-${msg._id || idx}`}
+                  className="flex justify-end gap-3"
+                >
+                  <div className="bg-green-100 text-gray-800 rounded-xl px-4 py-2 max-w-lg text-left border-l-4 border-green-500 shadow-sm">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-semibold text-green-700 text-sm">
+                        {admin?.name || "Support Admin"}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <div className="text-gray-800">{msg.messages}</div>
                   </div>
-                  <div>{msg.messages}</div>
+                  <img
+                    src={
+                      admin?.avatar ||
+                      "https://randomuser.me/api/portraits/women/65.jpg"
+                    }
+                    alt="Admin"
+                    className="w-10 h-10 rounded-full border-2 border-green-500 flex-shrink-0"
+                  />
                 </div>
-                <img
-                  src="https://randomuser.me/api/portraits/women/65.jpg"
-                  alt="Admin"
-                  className="w-8 h-8 rounded-full"
-                />
-              </div>
-            ) : (
-              // Left side for user
-              <div key={`user-${idx}`} className="flex gap-3">
-                <img
-                  src={
-                    ticket?.userProfile?.avatar ||
-                    "https://randomuser.me/api/portraits/men/75.jpg"
-                  }
-                  alt={ticket?.userProfile?.fullName}
-                  className="w-8 h-8 rounded-full"
-                />
-                <div className="bg-blue-100 text-gray-800 rounded-xl px-4 py-2 max-w-lg">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">
-                      {ticket?.userProfile?.fullName}
-                    </p>
-                    <span className="text-xs text-gray-400">
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+              ) : (
+                // 🔵 LEFT SIDE - USER MESSAGES
+                <div
+                  key={`user-${idx}-${msg._id || idx}`}
+                  className="flex gap-3"
+                >
+                  <img
+                    src={
+                      ticket?.userProfile?.avatar ||
+                      "https://randomuser.me/api/portraits/men/75.jpg"
+                    }
+                    alt={ticket?.userProfile?.fullName || "User"}
+                    className="w-10 h-10 rounded-full border-2 border-blue-500 flex-shrink-0"
+                  />
+                  <div className="bg-blue-100 text-gray-800 rounded-xl px-4 py-2 max-w-lg border-l-4 border-blue-500 shadow-sm">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-semibold text-blue-700 text-sm">
+                        {ticket?.userProfile?.fullName || "Customer"}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <div className="text-gray-800">{msg.messages}</div>
                   </div>
-                  <div>{msg.messages}</div>
                 </div>
-              </div>
+              )
             )
+          ) : (
+            <div className="text-center text-gray-500 py-8">
+              <p>No messages yet. Start the conversation!</p>
+            </div>
           )}
         </div>
 
-        {/* Input */}
-        <div className="mt-10 relative w-full">
+        {/* Input Section */}
+        <div className="mt-6 relative w-full">
           <input
             type="text"
-            placeholder="message..."
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 outline-none"
+            placeholder={
+              isTicketClosed
+                ? "Cannot reply - ticket is resolved"
+                : isSending
+                ? "Sending..."
+                : "Type your reply..."
+            }
+            className={`w-full border rounded-lg px-4 py-3 pr-12 outline-none transition-all ${
+              isTicketClosed
+                ? "border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed"
+                : "border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            disabled={isSending || isTicketClosed}
+            maxLength={500}
           />
           <button
             onClick={handleSend}
-            className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-blue-500 text-xl"
+            disabled={isSending || newMessage.trim() === "" || isTicketClosed}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-blue-500 text-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <FiSend />
+            {isTicketClosed ? (
+              <FiLock />
+            ) : isSending ? (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            ) : (
+              <FiSend />
+            )}
           </button>
         </div>
+
+        {/* Character count - only show if ticket is not closed */}
+        {!isTicketClosed && (
+          <div className="text-right text-xs text-gray-400 mt-1">
+            {newMessage.length}/500
+          </div>
+        )}
       </div>
     </div>
   );

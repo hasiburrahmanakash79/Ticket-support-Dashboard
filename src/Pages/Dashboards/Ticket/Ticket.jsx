@@ -25,7 +25,6 @@ const useDebounce = (value, delay) => {
 
 const Ticket = () => {
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
   // Debounce search term to avoid excessive API calls
@@ -33,7 +32,6 @@ const Ticket = () => {
 
   const { tickets, loading, error, totalPages, refetch } = useTicket({
     page,
-    status,
     searchTerm: debouncedSearchTerm,
   });
 
