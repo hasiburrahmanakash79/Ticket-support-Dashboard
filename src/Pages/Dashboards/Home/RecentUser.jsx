@@ -5,8 +5,6 @@ const RecentUser = () => {
   const { users, loading, error } = useUser();
   const sliceUser = users.slice(0, 5);
 
-console.log(users);
-
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>Error loading users!</div>;
 
@@ -23,12 +21,12 @@ console.log(users);
           </tr>
         </thead>
         <tbody className="text-sm text-center">
-          {sliceUser.map((user, idx) => (
+          {sliceUser?.map((user, idx) => (
             <tr key={idx} className="border-t border-gray-200">
-              <td className="py-3 px-4 text-left">{user.userProfile.nickname || 'N/A'}</td>
-              <td className="py-4 px-4">{user.email}</td>
-              <td className="py-3 px-4">{user.userProfile.phone || 'N/A'}</td>
-              <td className="py-3 px-4">{user.role}</td>
+              <td className="py-3 px-4 text-left">{user?.userProfile?.nickname || 'N/A'}</td>
+              <td className="py-4 px-4">{user?.email}</td>
+              <td className="py-3 px-4">{user?.userProfile?.phone || 'N/A'}</td>
+              <td className="py-3 px-4">{user?.role}</td>
             </tr>
           ))}
         </tbody>

@@ -22,7 +22,7 @@ const useConversation = (ticketId) => {
     fetchChat();
   }, [ticketId]);
 
-  return { chat, loading };
+  return { chat, loading, refetch: () => setLoading(true)};
 };
 
 export default useConversation;

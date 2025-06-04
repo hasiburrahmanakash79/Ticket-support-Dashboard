@@ -52,9 +52,8 @@ const Conversation = () => {
     };
 
     try {
-
       const response = await apiClient.post(`/chat/${id}`, newMsg);
-      console.log("Message sent successfully:", response.data);
+      console.log("Message sent successfully:", response?.data);
 
       setNewMessage("");
 
@@ -71,8 +70,8 @@ const Conversation = () => {
 
       let errorMessage = "Failed to send message. Please try again.";
 
-      if (err.response?.data?.message) {
-        const backendMessage = err.response.data.message;
+      if (err?.response?.data?.message) {
+        const backendMessage = err?.response?.data?.message;
 
         if (backendMessage.includes("ticket is closed")) {
           errorMessage =
@@ -122,10 +121,10 @@ const Conversation = () => {
         {ticket?.status && (
           <span
             className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-              ticket.status
+              ticket?.status
             )}`}
           >
-            {ticket.status}
+            {ticket?.status}
           </span>
         )}
       </div>
@@ -202,7 +201,7 @@ const Conversation = () => {
         )}
 
         {/* Chat Messages */}
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="space-y-4 max-h-96 overflow-y-auto" id="chat-container">
           {chat?.data?.length > 0 ? (
             chat.data.map((msg, idx) =>
               isAdminMessage(msg) ? (
