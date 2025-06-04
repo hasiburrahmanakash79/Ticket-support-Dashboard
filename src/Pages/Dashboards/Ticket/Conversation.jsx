@@ -43,8 +43,8 @@ const Conversation = () => {
         text: newMessage,
       };
 
-      setMessages((prev) => [...prev, localMsg]);
-      setNewMessage("");
+      setNewMessage((prev) => [...prev, localMsg]);
+      // setNewMessage("");
     } catch (err) {
       console.error("Failed to send message", err);
     }
