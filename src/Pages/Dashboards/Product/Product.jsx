@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FaCamera } from "react-icons/fa6"
@@ -66,7 +64,7 @@ const Product = () => {
       setImageFile(null)
       setSubmitError("")
     } catch (error) {
-      console.error("❌ Error:", error.response?.data || error.message)
+      console.error("Error:", error.response?.data || error.message)
 
       let errorMessage = "Failed to add product"
       if (error.response?.data?.message) {

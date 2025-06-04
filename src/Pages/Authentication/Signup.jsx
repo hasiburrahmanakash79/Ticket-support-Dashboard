@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import logo from "../../assets/logo/logo.png";
 import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useState } from "react";
@@ -23,9 +24,7 @@ const Signup = () => {
     <div className="flex min-h-screen bg-base-200">
       {/* Left Side */}
       <div className="w-1/2 bg-blue-500 flex items-center justify-center p-8">
-        <h2 className="text-white text-center text-4xl font-bold leading-relaxed">
-          Logo
-        </h2>
+        <img src={logo} alt="" className="w-44" />
       </div>
 
       {/* Right Side */}

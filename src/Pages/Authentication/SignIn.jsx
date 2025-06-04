@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logo from "../../assets/logo/logo.png"
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -54,9 +55,7 @@ const SignIn = () => {
     <div className="flex min-h-screen">
       {/* Left Side */}
       <div className="w-1/2 bg-blue-500 flex items-center justify-center p-8">
-        <h2 className="text-white text-center text-4xl font-bold leading-relaxed">
-          Logo
-        </h2>
+        <img src={logo} alt="" className="w-44" />
       </div>
 
       {/* Right Side */}
@@ -114,18 +113,11 @@ const SignIn = () => {
             )}
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("remember")}
-                  className="accent-blue-500"
-                />
-                Remember me
-              </label>
+            <div className="flex items-center justify-end text-sm">
+              
               <a
                 href="/forgot-password"
-                className="text-blue-500 hover:underline"
+                className="text-blue-500 hover:underline text-end"
               >
                 Forgot Password?
               </a>

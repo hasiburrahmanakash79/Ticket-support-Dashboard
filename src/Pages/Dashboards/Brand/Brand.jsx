@@ -50,7 +50,7 @@ const Brand = () => {
           "Content-Type": "multipart/form-data",
         },
       })
-
+  
       console.log("Brand added successfully:", res.data)
 
       toast.success("Brand added successfully!", {
