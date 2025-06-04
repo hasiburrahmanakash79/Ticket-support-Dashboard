@@ -12,6 +12,7 @@ import User from "../Pages/Dashboards/User/User";
 import Ticket from "../Pages/Dashboards/Ticket/Ticket";
 import Conversation from "../Pages/Dashboards/Ticket/Conversation";
 import ProtectedRoute from "./ProtectedRoute";
+import Product from "../Pages/Dashboards/Product/Product";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,6 +37,14 @@ const router = createBrowserRouter([
       {
         path: "/ticket_details/:id",
         element: <Conversation />,
+      },
+      {
+        path: "/product",
+        element: <Product />,
+      },
+      {
+        path: "/notification",
+        element: <Notifications />,
       },
       {
         path: "/notification",
