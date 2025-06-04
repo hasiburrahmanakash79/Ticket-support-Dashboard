@@ -13,6 +13,7 @@ import Ticket from "../Pages/Dashboards/Ticket/Ticket";
 import Conversation from "../Pages/Dashboards/Ticket/Conversation";
 import ProtectedRoute from "./ProtectedRoute";
 import Product from "../Pages/Dashboards/Product/Product";
+import Brand from "../Pages/Dashboards/Brand/Brand";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,8 +44,8 @@ const router = createBrowserRouter([
         element: <Product />,
       },
       {
-        path: "/notification",
-        element: <Notifications />,
+        path: "/brand",
+        element: <Brand />,
       },
       {
         path: "/notification",

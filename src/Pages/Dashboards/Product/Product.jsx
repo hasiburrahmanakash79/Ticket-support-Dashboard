@@ -43,7 +43,7 @@ const Product = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="gap-6 p-6 text-[#023337]"
+      className="text-[#023337]"
     >
       <div className="bg-white shadow rounded-lg p-6 space-y-6">
         <div>
