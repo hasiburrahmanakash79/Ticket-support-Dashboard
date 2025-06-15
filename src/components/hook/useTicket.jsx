@@ -20,7 +20,7 @@ const useTicket = ({ page = 1, status = '', searchTerm = '' }) => {
       });
 
       setTickets(res?.data?.data || []);
-      setTotalPages(res.data?.totalPages || 1); // Optional
+      setTotalPages(res.data?.totalPages || 1);
       setError(null);
 
     } catch (err) {

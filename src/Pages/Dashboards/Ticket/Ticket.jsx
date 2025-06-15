@@ -40,7 +40,7 @@ const Ticket = () => {
 
   const [editTicket, setEditTicket] = useState(null);
   const [editStatus, setEditStatus] = useState("");
-  const [originalStatus, setOriginalStatus] = useState(""); // Track original status
+  const [originalStatus, setOriginalStatus] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState("");

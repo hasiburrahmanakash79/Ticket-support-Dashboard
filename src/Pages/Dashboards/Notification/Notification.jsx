@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import logo from "../../../assets/logo/logo.png";
 import { FaCheck } from "react-icons/fa";
-import CommonModal from "../../../components/Common/CommonModal";
 import useNotification from "../../../components/hook/useNotification";
+import { Link } from "react-router-dom";
 
 const Notifications = () => {
   const { notifications: fetchedNotifications, loading } = useNotification();
   const [notifications, setNotifications] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   console.log(notifications);
 
   // Update local state when fetchedNotifications changes
@@ -17,7 +15,7 @@ const Notifications = () => {
       const updated = fetchedNotifications.map((item) => ({
         ...item,
         read: item.read || false,
-        image: logo, 
+        image: logo,
       }));
       setNotifications(updated);
     }
@@ -28,13 +26,19 @@ const Notifications = () => {
     setNotifications(updated);
   };
 
-  const handleClickNotification = (item) => {
-    const updated = notifications.map((n) =>
-      n._id === item._id ? { ...n, read: true } : n
-    );
-    setNotifications(updated);
-    setSelected(item);
-    setIsModalOpen(true);
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12 || 12;
+
+    return `Date: ${day}-${month}-${year}, Time: ${hours}:${minutes}${ampm}`;
   };
 
   if (loading) return <p>Loading notifications...</p>;
@@ -54,12 +58,13 @@ const Notifications = () => {
 
       <div className="space-y-3">
         {notifications.map((item) => (
-          <div
+          <Link
             key={item._id}
+            to={`/ticket_details/${item.ticketId}`}
             className={`flex gap-4 py-4 cursor-pointer hover:bg-blue-50 transform duration-200 border border-gray-200 px-5 rounded-lg ${
               item.read ? "text-gray-500" : "font-semibold"
             }`}
-            onClick={() => handleClickNotification(item)}
+            
           >
             <img src={item.image || logo} alt="logo" className="w-20" />
             <div className="flex-1">
@@ -67,9 +72,9 @@ const Notifications = () => {
               <div className="text-sm">{item.message}</div>
             </div>
             <div className="text-sm text-gray-400 whitespace-nowrap">
-              {item.time || "Just now"}
+              {item.updatedAt ? formatDateTime(item.updatedAt) : "Just now"}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -77,20 +82,7 @@ const Notifications = () => {
         View all notification
       </div>
 
-      {/* ✅ Modal with selected data */}
-      <CommonModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Notification Details"
-      >
-        {selected && (
-          <div className="space-y-3">
-            <p className="text-lg font-bold">{selected.title}</p>
-            <p className="text-gray-500">{selected.time || "Recently"}</p>
-            <p>{selected.message}</p>
-          </div>
-        )}
-      </CommonModal>
+      
     </div>
   );
 };

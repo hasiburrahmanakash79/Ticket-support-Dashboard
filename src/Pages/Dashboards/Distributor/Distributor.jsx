@@ -11,6 +11,7 @@ const Distributor = () => {
   const [submitError, setSubmitError] = useState("");
   const { register, handleSubmit, reset } = useForm();
 
+  console.log(distributors);
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setSubmitError("");
@@ -147,7 +148,7 @@ const Distributor = () => {
             {distributors?.map((distributor) => (
               <tr key={distributor?._id} className="border-t border-gray-200">
                 <td className="py-3 px-4 text-left">
-                  {distributor?.user?.nickname || "N/A"}
+                  {distributor?.user?.userProfile?.fullName || "N/A"}
                 </td>
                 <td className="py-4 px-4">{distributor?.user?.email}</td>
                 <td className="py-3 px-4">
