@@ -44,6 +44,7 @@ const Ticket = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState("");
+  const [rejectedReason, setRejectedReason] = useState("");
 
   // Reset page when search or status changes
   useEffect(() => {
@@ -83,10 +84,13 @@ const Ticket = () => {
       return;
     }
 
-    if (originalStatus === editStatus) {
-      setIsEditModalOpen(false);
-      setEditTicket(null);
-      setUpdateError("");
+    if (originalStatus === editStatus && editStatus !== "Rejected") {
+      closeEditModal();
+      return;
+    }
+
+    if (editStatus === "Rejected" && !rejectedReason.trim()) {
+      setUpdateError("Please provide a reason for rejection.");
       return;
     }
 
@@ -94,14 +98,22 @@ const Ticket = () => {
     setUpdateError("");
 
     try {
-      const response = await apiClient.patch(`/ticket/${editTicket._id}`, {
+      const payload = {
         status: editStatus,
-      });
+        rejectedReason: editStatus === "Rejected" ? rejectedReason : "",
+      };
 
+      if (editStatus === "Rejected") {
+        payload.rejectedReason = rejectedReason;
+      }
+
+      const response = await apiClient.patch(
+        `/ticket/${editTicket._id}`,
+        payload
+        
+      );
       console.log("Ticket updated successfully:", response.data);
-      setIsEditModalOpen(false);
-      setEditTicket(null);
-      setOriginalStatus("");
+      closeEditModal();
       refetch();
     } catch (error) {
       console.error("Failed to update ticket", error);
@@ -120,6 +132,7 @@ const Ticket = () => {
     setOriginalStatus("");
     setUpdateError("");
     setIsUpdating(false);
+    setRejectedReason("");
   };
 
   const getStatusColor = (status) => {
@@ -334,6 +347,20 @@ const Ticket = () => {
                   </option>
                 </select>
               </div>
+              {editStatus === "Rejected" && (
+                <div className="mt-3">
+                  <label className="block font-medium mb-1">
+                    Rejection Reason:
+                  </label>
+                  <textarea
+                    rows={3}
+                    className="w-full border border-gray-300 rounded px-2 py-1"
+                    placeholder="Enter rejection reason"
+                    value={rejectedReason}
+                    onChange={(e) => setRejectedReason(e.target.value)}
+                  ></textarea>
+                </div>
+              )}
             </div>
             <div className="flex justify-center gap-4 pt-4 w-full">
               <button
