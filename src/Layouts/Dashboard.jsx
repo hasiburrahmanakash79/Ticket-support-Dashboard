@@ -1,8 +1,7 @@
 import logo from "../assets/logo/logo.png";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BiHomeAlt2 } from "react-icons/bi";
-import { GiDeliveryDrone } from "react-icons/gi";
-import { RiSettings4Line, RiListCheck3  } from "react-icons/ri";
+import { RiSettings4Line, RiListCheck3, RiUserAddLine } from "react-icons/ri";
 import { CiMedicalClipboard } from "react-icons/ci";
 import { FaRightFromBracket } from "react-icons/fa6";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -40,7 +39,7 @@ const Dashboard = () => {
     Ticket: CiMedicalClipboard,
     User: AiOutlineUsergroupAdd,
     Product: RiListCheck3 ,
-    Brand: GiDeliveryDrone ,
+    Distributor: RiUserAddLine  ,
     Settings: RiSettings4Line,
     Notification: IoNotificationsOutline,
   };
@@ -72,9 +71,9 @@ const Dashboard = () => {
       role: "admin",
     },
     {
-      title: "Brand",
-      path: "/brand",
-      icon: iconMappings.Brand,
+      title: "Distributor",
+      path: "/distributor",
+      icon: iconMappings.Distributor,
       role: "admin",
     },
     {
