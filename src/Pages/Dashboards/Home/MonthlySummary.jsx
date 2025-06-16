@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import dayjs from "dayjs";
-// import useTicket from "../../../components/hook/useTicket";
-import useOverview from "../../../components/hook/useOverview";
 
-const TicketSummary = () => {
+const TicketSummary = ({ data, loading }) => {
   const [selectedRange, setSelectedRange] = useState("Monthly");
   const [chartData, setChartData] = useState([]);
-  // const { tickets, loading } = useTicket([]);
 
-  const { overview, loading } = useOverview([]);
-
-  const tickets = overview?.presentYearAllTicket;
+  const tickets = data?.presentYearAllTicket;
 
   useEffect(() => {
     if (loading || !tickets?.length) return;
@@ -67,7 +62,6 @@ const TicketSummary = () => {
     };
 
     const data = generateData();
-    console.log("generate", data);
     setChartData(data);
   }, [selectedRange, tickets, loading]);
 

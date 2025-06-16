@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 const Notifications = () => {
   const { notifications: fetchedNotifications, loading } = useNotification();
   const [notifications, setNotifications] = useState([]);
-  console.log(notifications);
 
   // Update local state when fetchedNotifications changes
   useEffect(() => {

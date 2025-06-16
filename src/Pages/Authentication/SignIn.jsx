@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import logo from "../../assets/logo/logo.png";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
@@ -17,12 +17,20 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const lastSubmitTimeRef = useRef(0); // for debounce
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
   const onSubmit = async (data) => {
+    const now = Date.now();
+    if (now - lastSubmitTimeRef.current < 2000) {
+      // ⛔ Prevent multiple rapid submissions
+      return;
+    }
+    lastSubmitTimeRef.current = now;
+
     setLoading(true);
     setErrorMsg("");
 
@@ -30,10 +38,9 @@ const SignIn = () => {
       const res = await apiClient.post("/auth/login", data);
 
       if (res?.data?.data?.accessToken) {
-        const accessToken = res?.data?.data?.accessToken;
-        const refreshToken = res?.data?.data?.refreshToken;
+        const accessToken = res.data.data.accessToken;
+        const refreshToken = res.data.data.refreshToken;
 
-        // ✅ Save in cookie (not just localStorage)
         setCookie("accessToken", accessToken, { maxAge: 30 * 60 }); // 30 mins
         setCookie("refreshToken", refreshToken, { maxAge: 7 * 24 * 60 * 60 }); // 7 days
 
@@ -43,11 +50,22 @@ const SignIn = () => {
       }
     } catch (err) {
       console.log(err);
-      if (err.response?.data?.message) {
+      if (err.response?.status === 429) {
+        setErrorMsg("Too many attempts. Please wait a moment and try again.");
+      } else if (err.response?.data?.message) {
         setErrorMsg(err.response.data.message);
       } else {
         setErrorMsg("Login failed. Please try again.");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Prevent form submission on Enter if loading
+  const handleKeyDown = (e) => {
+    if (loading && e.key === "Enter") {
+      e.preventDefault();
     }
   };
 
@@ -55,7 +73,7 @@ const SignIn = () => {
     <div className="flex min-h-screen">
       {/* Left Side */}
       <div className="w-1/2 bg-blue-500 flex items-center justify-center p-8">
-        <img src={logo} alt="" className="w-44" />
+        <img src={logo} alt="Logo" className="w-44" />
       </div>
 
       {/* Right Side */}
@@ -70,7 +88,7 @@ const SignIn = () => {
             <p className="text-red-600 text-center text-sm mb-4">{errorMsg}</p>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyDown} className="space-y-4">
             {/* Email */}
             <input
               type="email"
@@ -112,7 +130,7 @@ const SignIn = () => {
               </p>
             )}
 
-            {/* Remember Me & Forgot Password */}
+            {/* Forgot Password */}
             <div className="flex items-center justify-end text-sm">
               <a
                 href="/forgot-password"
@@ -122,10 +140,12 @@ const SignIn = () => {
               </a>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:shadow-xl duration-500 text-white font-semibold py-2 rounded-md"
+              className={`w-full bg-blue-500 hover:shadow-xl duration-500 text-white font-semibold py-2 rounded-md ${
+                loading ? "opacity-60 cursor-not-allowed" : ""
+              }`}
               disabled={loading}
             >
               {loading ? "Logging in..." : "Login"}

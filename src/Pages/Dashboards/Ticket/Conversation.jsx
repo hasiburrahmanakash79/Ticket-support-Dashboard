@@ -337,6 +337,7 @@ import useTicket from "../../../components/hook/useTicket";
 import useConversation from "../../../components/hook/useConversation";
 import apiClient from "../../../lib/api-client";
 import useAdmin from "../../../components/hook/useAdmin";
+import userImage from '../../../assets/images/user.png'
 
 const Conversation = () => {
   const [newMessage, setNewMessage] = useState("");
@@ -381,7 +382,10 @@ const Conversation = () => {
       await refetch();
       scrollToBottom();
 
-      toast.success("Message sent!");
+      if(res.status === 200) {
+        toast.success("Message sent!");
+      }
+
     } catch (err) {
       console.error(err);
       let msg = "Failed to send message.";
@@ -449,6 +453,7 @@ const Conversation = () => {
               key={idx}
               src={`http://192.168.10.18:5001${img}`}
               alt="Ticket Img"
+              crossOrigin="anonymous"
               className="h-32 object-cover rounded shadow"
             />
           ))}
@@ -485,8 +490,9 @@ const Conversation = () => {
                     </div>
                   </div>
                   <img
-                    src={admin?.avatar || "https://randomuser.me/api/portraits/women/65.jpg"}
+                    src={`http://192.168.10.18:5001/${admin.userProfile.image}`}
                     className="w-8 h-8 rounded-full border border-green-500"
+                    crossOrigin="anonymous"
                   />
                 </div>
               ) : (
@@ -495,7 +501,7 @@ const Conversation = () => {
                   className="flex items-start gap-2"
                 >
                   <img
-                    src={ticket?.userProfile?.avatar || "https://randomuser.me/api/portraits/men/75.jpg"}
+                    src={ticket?.userProfile?.avatar || userImage}
                     className="w-8 h-8 rounded-full border border-blue-500"
                   />
                   <div className="bg-blue-100 border-l-4 border-blue-500 rounded-xl p-3 shadow max-w-lg text-sm">

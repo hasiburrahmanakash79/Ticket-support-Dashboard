@@ -38,8 +38,8 @@ const Dashboard = () => {
     Home: BiHomeAlt2,
     Ticket: CiMedicalClipboard,
     User: AiOutlineUsergroupAdd,
-    Product: RiListCheck3 ,
-    Distributor: RiUserAddLine  ,
+    Product: RiListCheck3,
+    Distributor: RiUserAddLine,
     Settings: RiSettings4Line,
     Notification: IoNotificationsOutline,
   };
@@ -165,9 +165,10 @@ const Dashboard = () => {
           <div className="flex items-center gap-x-4">
             <div className="w-12 h-12 rounded-full overflow-hidden">
               <img
-                src="https://img.daisyui.com/images/profile/demo/wonderperson@192.webp"
+                src={`http://192.168.10.18:5001/${admin.userProfile.image}`}
                 alt="Profile"
                 className="w-full h-full object-cover"
+                crossOrigin="anonymous"
               />
             </div>
             <div>

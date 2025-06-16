@@ -5,13 +5,9 @@ import {
   FaClipboardList,
   FaClipboardQuestion,
 } from "react-icons/fa6";
-import useOverview from "../../../components/hook/useOverview";
 
-const DashboardCard = () => {
-  const {overview, loading} = useOverview([])
-
-
-  if (loading) return <div>Loading...</div>;
+const DashboardCard = ({ data }) => {
+  
   return (
     <div className="grid grid-cols-7 gap-7">
       <div className="col-span-5 grid grid-cols-3 gap-7">
@@ -20,7 +16,7 @@ const DashboardCard = () => {
             <FaClipboardList className="text-6xl" />
             <div className="space-y-3">
               <p className="text-lg">Total Ticket</p>
-              <h1 className="text-4xl font-semibold">{overview?.monthlyTotal}</h1>
+              <h1 className="text-4xl font-semibold">{data?.monthlyTotal}</h1>
             </div>
           </div>
         </div>
@@ -29,7 +25,7 @@ const DashboardCard = () => {
             <FaClipboardQuestion className="text-6xl" />
             <div className="space-y-3">
               <p className="text-lg">Ticket Pending</p>
-              <h1 className="text-4xl font-semibold">{overview?.monthlyPending}</h1>
+              <h1 className="text-4xl font-semibold">{data?.monthlyPending}</h1>
             </div>
           </div>
         </div>
@@ -38,7 +34,7 @@ const DashboardCard = () => {
             <FaClipboardCheck className="text-6xl" />
             <div className="space-y-3">
               <p className="text-lg">Resolved Ticket</p>
-              <h1 className="text-4xl font-semibold">{overview?.monthlySolved}</h1>
+              <h1 className="text-4xl font-semibold">{data?.monthlySolved}</h1>
             </div>
           </div>
         </div>
@@ -48,7 +44,7 @@ const DashboardCard = () => {
           <FaChartColumn className="text-6xl" />
           <div className="space-y-3">
             <p className="text-lg">New Submission Today</p>
-            <h1 className="text-4xl font-semibold">{overview?.todaysTotal}</h1>
+            <h1 className="text-4xl font-semibold">{data?.todaysTotal}</h1>
           </div>
         </div>
       </div>

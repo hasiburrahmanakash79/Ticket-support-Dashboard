@@ -11,7 +11,6 @@ const Distributor = () => {
   const [submitError, setSubmitError] = useState("");
   const { register, handleSubmit, reset } = useForm();
 
-  console.log(distributors);
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setSubmitError("");
@@ -41,12 +40,10 @@ const Distributor = () => {
   };
 
   const handleDeleteClick = async (id) => {
-    console.log(id);
     try {
       const res = await apiClient.delete(
         `/distributor/${id}`
       );
-      console.log(res);
       toast.success("Distributor deleted successfully!", {
         duration: 4000,
         position: "top-right",

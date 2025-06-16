@@ -11,7 +11,6 @@ const useNotification = () => {
     try {
       const res = await apiClient.get("/notification/get-notification-from-user");
       setNotifications(res.data.data || []);
-      console.log(res);
       setError(null);
     } catch (err) {
       console.error("Error fetching notifications:", err.response?.data || err.message);

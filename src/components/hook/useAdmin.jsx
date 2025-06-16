@@ -1,23 +1,33 @@
+// useAdmin.js
 import { useEffect, useState } from "react";
 import apiClient from "../../lib/api-client";
 
+let cachedAdmin = null;
+let cachedPromise = null;
+
 const useAdmin = () => {
-  const [admin, setAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [admin, setAdmin] = useState(cachedAdmin);
+  const [loading, setLoading] = useState(!cachedAdmin);
 
   useEffect(() => {
-    const fetchAdmin = async () => {
-      try {
-        const res = await apiClient.get("/user/me");
-        setAdmin(res.data.data);
-      } catch (error) {
-        console.error("Error fetching admin data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (cachedAdmin) return;
 
-    fetchAdmin();
+    if (!cachedPromise) {
+      cachedPromise = apiClient.get("/user/me").then((res) => {
+        cachedAdmin = res.data.data;
+        return cachedAdmin;
+      });
+    }
+
+    cachedPromise
+      .then((data) => {
+        setAdmin(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching admin:", err);
+        setLoading(false);
+      });
   }, []);
 
   return { admin, loading };
