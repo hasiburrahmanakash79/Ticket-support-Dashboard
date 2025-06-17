@@ -3,7 +3,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import dayjs from "dayjs";
 
 const TicketSummary = ({ data, loading }) => {
-  const [selectedRange, setSelectedRange] = useState("Monthly");
+  const [selectedRange, setSelectedRange] = useState("Daily");
   const [chartData, setChartData] = useState([]);
 
   const tickets = data?.presentYearAllTicket;

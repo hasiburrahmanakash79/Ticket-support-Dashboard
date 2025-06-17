@@ -15,6 +15,7 @@ const User = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { users, loading, error, refetch } = useUser();
+  // console.log(users);
 
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>Error loading users!</div>;
@@ -120,7 +121,7 @@ const User = () => {
                     className="hover:text-blue-500 transition-colors"
                     onClick={() => handleViewOwner(user)}
                   >
-                    {user.name}
+                    {user?.profileInfo?.fullName}
                   </button>
                 </td>
                 <td className="py-4 px-4">{user.email}</td>

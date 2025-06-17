@@ -12,6 +12,7 @@ const Distributor = () => {
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = async (data) => {
+    console.log(data);
     setIsSubmitting(true);
     setSubmitError("");
 
@@ -59,7 +60,7 @@ const Distributor = () => {
     }
   };
 
-  console.log(distributors);
+  // console.log(distributors);
   if (loading) return <div>Loading users...</div>;
 
   return (
@@ -77,7 +78,7 @@ const Distributor = () => {
 
           <label className="block text-sm font-medium mb-1 mt-5">Name</label>
           <input
-            {...register("name", { required: true })}
+            {...register("fullName", { required: true })}
             placeholder="write distributor name"
             className="w-full border border-gray-200 px-3 py-2 rounded-lg bg-gray-50 outline-none"
             disabled={isSubmitting}
@@ -133,7 +134,7 @@ const Distributor = () => {
       </form>
 
       <div className="overflow-x-auto border border-gray-200 rounded-xl p-5 mt-10">
-        <h2 className="text-2xl font-semibold mb-5">User</h2>
+        <h2 className="text-2xl font-semibold mb-5">Distributors</h2>
         <table className="min-w-full bg-white rounded-xl text-center">
           <thead>
             <tr className="text-sm bg-blue-50">
