@@ -130,7 +130,7 @@ const SignIn = () => {
               </p>
             )}
 
-            {/* Forgot Password */}
+            {/* Forgot Password
             <div className="flex items-center justify-end text-sm">
               <a
                 href="/forgot-password"
@@ -138,7 +138,7 @@ const SignIn = () => {
               >
                 Forgot Password?
               </a>
-            </div>
+            </div> */}
 
             {/* Submit */}
             <button

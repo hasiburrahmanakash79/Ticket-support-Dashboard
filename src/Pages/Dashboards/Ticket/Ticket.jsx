@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import CommonModal from "../../../components/Common/CommonModal";
 import useTicket from "../../../components/hook/useTicket";
 import apiClient from "../../../lib/api-client";
+import toast from "react-hot-toast";
 
 // Debounce hook for search optimization
 const useDebounce = (value, delay) => {
@@ -49,7 +50,7 @@ const Ticket = () => {
   // Reset page when search or status changes
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearchTerm, status]);
+  }, [debouncedSearchTerm]);
 
   const handleDelete = (ticket) => {
     setDeleteTicket(ticket);
@@ -110,11 +111,16 @@ const Ticket = () => {
       const response = await apiClient.patch(
         `/ticket/${editTicket._id}`,
         payload
-        
       );
-      console.log("Ticket updated successfully:", response.data);
-      closeEditModal();
-      refetch();
+
+      if (response.status === 200) {
+        closeEditModal();
+        refetch();
+        toast.success("Status change successfully!", {
+          duration: 4000,
+          position: "top-right",
+        });
+      }
     } catch (error) {
       console.error("Failed to update ticket", error);
       const errorMessage =

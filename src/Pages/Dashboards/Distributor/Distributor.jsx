@@ -25,12 +25,12 @@ const Distributor = () => {
       });
 
       reset();
-      refetch()
+      refetch();
     } catch (error) {
       console.error("Submit failed:", error);
-      setSubmitError("Failed to add distributor");
+      setSubmitError("Failed to add distributor", error.message);
 
-      toast.error("Failed to add distributor", {
+      toast.error("Failed to add distributor", error.message, {
         duration: 5000,
         position: "top-right",
       });
@@ -41,14 +41,15 @@ const Distributor = () => {
 
   const handleDeleteClick = async (id) => {
     try {
-      const res = await apiClient.delete(
-        `/distributor/${id}`
-      );
-      toast.success("Distributor deleted successfully!", {
-        duration: 4000,
-        position: "top-right",
-      });
-      refetch();
+      const res = await apiClient.delete(`/distributor/${id}`);
+
+      if (res.status === 200) {
+        toast.success("Distributor deleted successfully!", {
+          duration: 4000,
+          position: "top-right",
+        });
+        refetch();
+      }
     } catch (error) {
       console.error("Delete failed:", error);
       toast.error("Failed to delete distributor", {
@@ -58,6 +59,7 @@ const Distributor = () => {
     }
   };
 
+  console.log(distributors);
   if (loading) return <div>Loading users...</div>;
 
   return (
