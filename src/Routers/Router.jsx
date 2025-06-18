@@ -14,6 +14,7 @@ import Conversation from "../Pages/Dashboards/Ticket/Conversation";
 import ProtectedRoute from "./ProtectedRoute";
 import Product from "../Pages/Dashboards/Product/Product";
 import Distributor from "../Pages/Dashboards/Distributor/Distributor";
+import AddProduct from "../Pages/Dashboards/Product/AddProduct";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "/product",
         element: <Product />,
+      },
+      {
+        path: "/add_product",
+        element: <AddProduct />,
       },
       {
         path: "/distributor",

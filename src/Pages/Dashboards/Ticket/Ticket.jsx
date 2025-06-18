@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import CommonModal from "../../../components/Common/CommonModal";
@@ -26,15 +25,8 @@ const useDebounce = (value, delay) => {
 
 const Ticket = () => {
   const [page, setPage] = useState(1);
-  const [searchInput, setSearchInput] = useState("");
 
-  // Debounce search term to avoid excessive API calls
-  const debouncedSearchTerm = useDebounce(searchInput, 500);
-
-  const { tickets, loading, error, totalPages, refetch } = useTicket({
-    page,
-    searchTerm: debouncedSearchTerm,
-  });
+  const { tickets, loading, error, totalPages, refetch } = useTicket([]);
 
   const [deleteTicket, setDeleteTicket] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -47,10 +39,23 @@ const Ticket = () => {
   const [updateError, setUpdateError] = useState("");
   const [rejectedReason, setRejectedReason] = useState("");
 
-  // Reset page when search or status changes
+  // Search term and debounce
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  // Reset page when search changes
   useEffect(() => {
     setPage(1);
   }, [debouncedSearchTerm]);
+
+  // Filter tickets by Ticket ID or User Name
+  const filteredTickets = tickets.filter((ticket) => {
+    const lowerSearch = debouncedSearchTerm.toLowerCase();
+    const matchId = ticket._id.toLowerCase().includes(lowerSearch);
+    const userName = ticket.userProfile?.fullName || "";
+    const matchName = userName.toLowerCase().includes(lowerSearch);
+    return matchId || matchName;
+  });
 
   const handleDelete = (ticket) => {
     setDeleteTicket(ticket);
@@ -104,10 +109,6 @@ const Ticket = () => {
         rejectedReason: editStatus === "Rejected" ? rejectedReason : "",
       };
 
-      if (editStatus === "Rejected") {
-        payload.rejectedReason = rejectedReason;
-      }
-
       const response = await apiClient.patch(
         `/ticket/${editTicket._id}`,
         payload
@@ -116,7 +117,7 @@ const Ticket = () => {
       if (response.status === 200) {
         closeEditModal();
         refetch();
-        toast.success("Status change successfully!", {
+        toast.success("Status changed successfully!", {
           duration: 4000,
           position: "top-right",
         });
@@ -165,22 +166,13 @@ const Ticket = () => {
     <div className="overflow-x-auto border border-gray-200 rounded-xl p-5">
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Ticket List</h2>
-        <div className="relative w-72">
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by email..."
-            className="w-full border border-gray-300 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          {/* Show searching indicator */}
-          {searchInput !== debouncedSearchTerm && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            </div>
-          )}
-        </div>
+        <input
+          type="text"
+          placeholder="Search by Ticket ID or User Name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full md:w-64 px-4 py-2 text-sm border border-gray-200 rounded-full outline-none"
+        />
       </div>
 
       <table className="min-w-full bg-white rounded-xl text-center">
@@ -195,8 +187,8 @@ const Ticket = () => {
           </tr>
         </thead>
         <tbody className="text-sm text-center">
-          {tickets.length > 0 ? (
-            tickets.map((ticket) => (
+          {filteredTickets.length > 0 ? (
+            filteredTickets.map((ticket) => (
               <tr key={ticket._id} className="border-t border-gray-200">
                 <td className="py-3 px-4 text-left hover:text-blue-500 hover:underline">
                   <Link to={`/ticket_details/${ticket._id}`}>{ticket._id}</Link>
@@ -273,6 +265,7 @@ const Ticket = () => {
         </div>
       )}
 
+      {/* Delete Modal */}
       <CommonModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -298,6 +291,7 @@ const Ticket = () => {
         </div>
       </CommonModal>
 
+      {/* Edit Modal */}
       <CommonModal isOpen={isEditModalOpen} onClose={closeEditModal}>
         {editTicket && (
           <div className="space-y-4 px-4 py-2">
