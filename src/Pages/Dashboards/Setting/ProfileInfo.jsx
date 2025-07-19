@@ -203,7 +203,7 @@ import { useNavigate } from "react-router-dom";
 import useAdmin from "../../../components/hook/useAdmin";
 import apiClient from "../../../lib/api-client";
 
-const BASE_URL = "http://192.168.10.18:5001"; // ✅ Your server's base URL
+const BASE_URL = "http://157.245.9.24:5001"; // ✅ Your server's base URL
 
 const ProfileInformation = () => {
   const [isEditing, setIsEditing] = useState(false);

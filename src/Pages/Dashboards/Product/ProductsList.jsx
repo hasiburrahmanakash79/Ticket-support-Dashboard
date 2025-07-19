@@ -116,7 +116,7 @@ const ProductsList = () => {
                   <img
                     src={
                       product?.image
-                        ? `http://192.168.10.18:5001${product.image}`
+                        ? `http://157.245.9.24:5001${product.image}`
                         : "/default-image.png"
                     }
                     crossOrigin="anonymous"

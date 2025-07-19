@@ -165,7 +165,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-x-4">
             <div className="w-12 h-12 rounded-full overflow-hidden">
               <img
-                src={`http://192.168.10.18:5001/${admin.userProfile.image}`}
+                src={`http://157.245.9.24:5001/${admin.userProfile.image}`}
                 alt="Profile"
                 className="w-full h-full object-cover"
                 crossOrigin="anonymous"

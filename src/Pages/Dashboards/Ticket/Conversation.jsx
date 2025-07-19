@@ -178,7 +178,7 @@
 //             {ticket?.images?.map((img, index) => (
 //               <div key={index} className="rounded overflow-hidden shadow-md">
 //                 <img
-//                   src={`http://192.168.10.18:5001${img}`}
+//                   src={`http://157.245.9.24:5001${img}`}
 //                   alt={`Ticket image ${index + 1}`}
 //                   className="w-full h-32 object-cover"
 //                 />
@@ -451,7 +451,7 @@ const Conversation = () => {
           {ticket?.images?.map((img, idx) => (
             <img
               key={idx}
-              src={`http://192.168.10.18:5001${img}`}
+              src={`http://157.245.9.24:5001${img}`}
               alt="Ticket Img"
               crossOrigin="anonymous"
               className="h-32 object-cover rounded shadow"
@@ -490,7 +490,7 @@ const Conversation = () => {
                     </div>
                   </div>
                   <img
-                    src={`http://192.168.10.18:5001/${admin.userProfile.image}`}
+                    src={`http://157.245.9.24:5001/${admin.userProfile.image}`}
                     className="w-8 h-8 rounded-full border border-green-500"
                     crossOrigin="anonymous"
                   />
