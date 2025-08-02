@@ -138,7 +138,7 @@ const Dashboard = () => {
         <div className="mt-28 bottom-10 absolute w-full">
           <button
             onClick={handleLogout}
-            className={`flex cursor-pointer text-sm items-center  p-2 w-4/5 ms-3 rounded text-red-400`}
+            className={`flex cursor-pointer text-sm items-center  p-2 w-4/5 ps-6 rounded text-red-400`}
           >
             <li className="flex items-center gap-x-4 w-full">
               <FaRightFromBracket />
@@ -165,7 +165,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-x-4">
             <div className="w-12 h-12 rounded-full overflow-hidden">
               <img
-                src={`http://157.245.9.24:5001/${admin.userProfile.image}`}
+                src={`http://157.245.9.24:5001${admin.userProfile.image}`}
                 alt="Profile"
                 className="w-full h-full object-cover"
                 crossOrigin="anonymous"

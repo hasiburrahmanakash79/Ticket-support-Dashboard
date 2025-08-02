@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../lib/api-client";
-import { setCookie } from "../../lib/cookie-utils";
+import { setCookie, getCookie } from "../../lib/cookie-utils";
 
 const SignIn = () => {
   const {
@@ -23,6 +23,7 @@ const SignIn = () => {
     setShowPassword((prev) => !prev);
   };
 
+ 
   const onSubmit = async (data) => {
     const now = Date.now();
     if (now - lastSubmitTimeRef.current < 2000) {
@@ -36,7 +37,7 @@ const SignIn = () => {
 
     try {
       const res = await apiClient.post("/auth/login", data);
-
+      console.log(res.data.data);
       if (res?.data?.data?.accessToken) {
         const accessToken = res.data.data.accessToken;
         const refreshToken = res.data.data.refreshToken;
@@ -68,6 +69,10 @@ const SignIn = () => {
       e.preventDefault();
     }
   };
+
+   if (getCookie("accessToken")) {
+    navigate("/");
+  }
 
   return (
     <div className="flex min-h-screen">
