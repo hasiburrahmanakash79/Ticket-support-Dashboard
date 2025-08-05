@@ -12,15 +12,16 @@ const useAdmin = () => {
   const token = getCookie("accessToken");
 
   useEffect(() => {
-    if (cachedAdmin) return;
+    if (cachedAdmin || !token) {
+      setLoading(false);
+      return;
+    }
 
-    if (token) {
-      if (!cachedPromise) {
-        cachedPromise = apiClient.get("/user/me").then((res) => {
-          cachedAdmin = res.data.data;
-          return cachedAdmin;
-        });
-      }
+    if (!cachedPromise) {
+      cachedPromise = apiClient.get("/user/me").then((res) => {
+        cachedAdmin = res.data.data;
+        return cachedAdmin;
+      });
     }
 
     cachedPromise
